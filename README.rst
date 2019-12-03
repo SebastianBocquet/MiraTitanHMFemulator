@@ -14,6 +14,7 @@ Just use `pip`:
 and then `pytest` to validate your installation:
 
     cd /path/to/MiraTitanUniverseHMFemulator
+    
     pytest
 
 With every test passed you are good to go!

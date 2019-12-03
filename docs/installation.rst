@@ -9,6 +9,7 @@ I recommend you use ``pip``. Just do
 To make sure nothing bad happened you should test the installation:
 
     cd /path/to/MiraTitanUniverseHMFemulator
+    
     pytest
 
 This should take 10-15 seconds and should confirm that you are all set. I
