@@ -9,13 +9,16 @@ Installation
 
 Just use `pip`:
 
-    pip install MiraTitanUniverseHMFemulator
+    pip install git+https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator
 
 Documentation
 -------------
 
-Documentation is hosted at `ReadTheDocs <http://MiraTitanUniverseHMFemulator.readthedocs.io/>`. Alternatively, take a look at `tutorial.ipynp <https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`,
-in this repository for a working example.
+Documentation is hosted at `ReadTheDocs
+<http://MiraTitanUniverseHMFemulator.readthedocs.io/>`. Alternatively, take a
+look at `tutorial.ipynp on GitHub 
+<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`
+for a working example.
 
 Citation
 --------
@@ -28,4 +31,6 @@ Please cite our paper when using the Mira-Titan Universe HMF emulator.
 Feedback, problems, questions
 -----------------------------
 
-Please report issues on `GitHub` where the package is hosted.
+Please report issues on `GitHub/MiraTitanUniverseHMFemulator
+<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`_
+where the package is hosted.
