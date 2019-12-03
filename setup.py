@@ -17,8 +17,10 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/md",
     url="https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator",
-    packages=['MiraTitanUniverseHMFemulator'],
-    package_data = {'MiraTitanUniverseHMFemulator': ['data/*.npy']},
+    packages=['MiraTitanUniverseHMFemulator',
+              'tests'],
+    package_data = {'MiraTitanUniverseHMFemulator': ['data/*.npy'],
+                    'tests': ['*.npy']},
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3",
