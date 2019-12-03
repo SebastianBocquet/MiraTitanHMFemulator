@@ -7,14 +7,13 @@ cosmological N-body simulations.
 Installation
 ------------
 
-Just use `pip`:
+Just use ``pip``:
 
     pip install git+https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator
 
-and then `pytest` to validate your installation:
+and then ``pytest`` to validate your installation:
 
     cd /path/to/MiraTitanUniverseHMFemulator
-    
     pytest
 
 With every test passed you are good to go!
@@ -40,5 +39,5 @@ Feedback, problems, questions
 -----------------------------
 
 Please report issues on `GitHub/MiraTitanUniverseHMFemulator
-<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`_
+<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator>`_
 where the package is hosted.

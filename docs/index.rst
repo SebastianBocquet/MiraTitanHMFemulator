@@ -30,5 +30,5 @@ Feedback, problems, questions
 -----------------------------
 
 Please report issues on `GitHub/MiraTitanUniverseHMFemulator
-<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`_
+<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator>`_
 where the package is hosted.
