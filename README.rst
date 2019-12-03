@@ -11,6 +11,13 @@ Just use `pip`:
 
     pip install git+https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator
 
+and then `pytest` to validate your installation:
+
+    cd /path/to/MiraTitanUniverseHMFemulator
+    pytest
+
+With every test passed you are good to go!
+
 Documentation
 -------------
 
