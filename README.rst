@@ -15,9 +15,9 @@ Documentation
 -------------
 
 Documentation is hosted at `ReadTheDocs
-<http://MiraTitanUniverseHMFemulator.readthedocs.io/>`. Alternatively, take a
-look at `tutorial.ipynp on GitHub 
-<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`
+<http://MiraTitanUniverseHMFemulator.readthedocs.io/>`_. Alternatively, take a
+look at `tutorial.ipynp on GitHub
+<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`_
 for a working example.
 
 Citation
