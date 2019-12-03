@@ -29,6 +29,6 @@ Please cite our paper when using the Mira-Titan Universe HMF emulator.
 Feedback, problems, questions
 -----------------------------
 
-Please report issues on `GitHub/MiraTitanUniverseHMFemulator
-<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator>`_
-where the package is hosted.
+Please `report issues on GitHub
+<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/issues>`_ where the
+package is hosted.
