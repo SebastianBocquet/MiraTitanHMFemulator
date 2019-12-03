@@ -1,7 +1,7 @@
 import setuptools
 import os
 
-with open("README.md", "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 with open('VERSION', 'r') as version_file:
