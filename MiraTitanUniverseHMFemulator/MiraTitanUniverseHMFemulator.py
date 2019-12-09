@@ -48,14 +48,14 @@ class Emulator:
             self.__PCA_means.append(_tmp[:,0])
             self.__PCA_std.append(_tmp[:,1])
             self.__PCA_transform.append(_tmp[:,2:])
-        self.__GP_means = np.load(os.path.join(data_path, 'GP_params_mean_191128-125407.npy'))
-        self.__GP_std = np.load(os.path.join(data_path, 'GP_params_std_191128-125407.npy'))
+        self.__GP_means = np.load(os.path.join(data_path, 'GP_params_mean_191209-133529.npy'))
+        self.__GP_std = np.load(os.path.join(data_path, 'GP_params_std_191209-133529.npy'))
 
         # GP input data
-        params_design = np.load(os.path.join(data_path, 'params_design_w0wb_191121-135935.npy'))
+        params_design = np.load(os.path.join(data_path, 'params_design_w0wb_191207-201834.npy'))
         hyper_params = np.load(os.path.join(data_path, 'hyperparams_191128-151317.npy'))
-        input_means = np.load(os.path.join(data_path, 'means_191128-125752.npy'))
-        prec_mat = np.load(os.path.join(data_path, 'cov_n_191128-125752.npy'))
+        input_means = np.load(os.path.join(data_path, 'means_191209-133529.npy'))
+        prec_mat = np.load(os.path.join(data_path, 'cov_n_191209-133529.npy'))
         self.__GPreg = [GP.GaussianProcess(params_design,
                                            input_means[z_id],
                                            hyper_params[z_id,:4],
