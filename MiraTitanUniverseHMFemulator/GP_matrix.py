@@ -22,30 +22,28 @@ class GaussianProcess:
         ----------
             x: design points [N_data, N_dim_input]
             y: design values [N_data, N_output]
-            rho: rho parameter [N_output, N_dim_input]
+            rho: CP correlation length [N_output, N_dim_input]
             prec_f: precision of the GP
             cov_n: covariance of y [N_output*N_data, N_output*N_data]
         Returns
         -------
             None
         """
-
-        # Check dimensions
-        # if len(y)!=len(x):
-        #     raise TypeError("Number of design points %d must match number of design values %d"%(len(y), len(x)))
         self.N_data = len(x)
         self.N_dim_input = x.shape[1]
         self.N_output = y.shape[1]
-        # assert len(prec_f)==self.N_output, \
-        #     "Number of GP vars %d does not match number of outputs %d"%(len(prec_f), self.N_output)
-        # assert cov_n.shape==(self.N_output*self.N_data, self.N_output*self.N_data), \
-        #     "Your measurement errors have the wrong shape (%s,%s) for %d GPs in %s dimensions."%(
-        #     cov_n.shape[0], cov_n.shape[1], self.N_output, self.N_data)
-        # assert rho.shape==(self.N_output, self.N_dim_input), \
-        #     "Your correlation lengths have shape (%d,%d), but data has (%d,%d)"%(
-        #         rho.shape[0], rho.shape[1], self.N_output, self.N_dim_input)
-        # assert len(prec_f)==self.N_output, \
-        #     "prec_f has wrong shape %d, but %d GPs"%(len(prec_f), self.N_output)
+
+        # Check dimensions
+        if self.N_data!=len(y):
+            raise TypeError("len(design points) %d must match len(design values) %d"%(self.N_data, len(y)))
+        if len(prec_f)!=self.N_output:
+            raise TypeError("len(prec_f) %d must match number of outputs %d"%(len(prec_f), self.N_output))
+        if cov_n.shape!=(self.N_output*self.N_data, self.N_output*self.N_data):
+            raise TypeError("Shape of data cov mat (%s,%s) must be (%s,%s)."%(
+                cov_n.shape[0], cov_n.shape[1], self.N_output*self.N_data, self.N_output*self.N_data))
+        if rho.shape!=(self.N_output, self.N_dim_input):
+            raise TypeError("Shape of correlation lengths (%d,%d) must be (%d,%d)"%(
+                rho.shape[0], rho.shape[1], self.N_output*self.N_dim_input, self.N_output*self.N_dim_input))
 
         self.x = x
         self.corr_rho = rho
@@ -60,7 +58,6 @@ class GaussianProcess:
             self.cholesky_factor = linalg.cho_factor(self.corrmat + cov_n)
         except:
             print("Could not compute Cholesky decomposition")
-            self.lnlike = -np.inf
             return
         self.Krig_basis = linalg.cho_solve(self.cholesky_factor, self.y_flat)
 
