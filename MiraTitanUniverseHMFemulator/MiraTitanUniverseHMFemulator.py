@@ -132,17 +132,12 @@ class Emulator:
             PC_weight = wstar * self.__GP_std[i] + self.__GP_means[i]
             # PCA transform
             output[self.z_arr[i]]['HMF'] = np.exp(np.dot(PC_weight, self.__PCA_transform[i].T) * self.__PCA_std[i] + self.__PCA_means[i])
-            output[self.z_arr[i]]['wstar'] = wstar
-            output[self.z_arr[i]]['wstar_covmat'] = wstar_covmat
-            output[self.z_arr[i]]['PC_weight'] = PC_weight
-
 
             # Draw parameter realizations
             if N_draw>0:
                 wstar_draws = np.random.multivariate_normal(wstar, wstar_covmat, N_draw)
                 PC_weight_draws = wstar_draws * self.__GP_std[i] + self.__GP_means[i]
                 HMF_draws = np.exp(np.dot(PC_weight_draws, self.__PCA_transform[i].T) * self.__PCA_std[i] + self.__PCA_means[i])
-                # self.res['HMF_draws'] = np.exp((self.res['PC_weight_draws']@master[self.step]['transform'].T)*master[self.step]['std_diff_design'] + master[self.step]['data_design_mean'])
                 # Replace infinites with nan to be able to get mean and std
                 idx = [np.all(np.isfinite(HMF_draws[j])) for j in range(N_draw)]
                 output[self.z_arr[i]]['HMF_draws'] = HMF_draws[idx]
