@@ -16,15 +16,16 @@ class GaussianProcess:
         return np.array(corr_matrix).reshape(a.shape[0], -1)
 
 
-    def __init__(self, x, y, prec_f, cov_n, rho=None):
-        """Compute design covariance matrix and ln-likelihood.
+    def __init__(self, x, y, cov_n, prec_f, rho, compute_lnlike=False):
+        """Set up covariance matrix and pre-compute its Cholesky decomposition.
         Parameters
         ----------
             x: design points [N_data, N_dim_input]
             y: design values [N_data, N_output]
-            rho: CP correlation length [N_output, N_dim_input]
-            prec_f: precision of the GP
             cov_n: covariance of y [N_output*N_data, N_output*N_data]
+            prec_f: precision of the GP
+            rho: CP correlation length [N_output, N_dim_input]
+            compute_lnlike: (optional, default to False) marginal likelihood
         Returns
         -------
             None
@@ -60,6 +61,11 @@ class GaussianProcess:
             print("Could not compute Cholesky decomposition")
             return
         self.Krig_basis = linalg.cho_solve(self.cholesky_factor, self.y_flat)
+
+        if compute_lnlike:
+            chi_squared = np.matmul(self.y_flat.T, self.Krig_basis)
+            ln_corrmat_det = 2 * np.sum(np.log(np.diag(self.cholesky_factor[0])))
+            self.lnlike = -.5 * chi_squared - .5 * ln_corrmat_det
 
 
     def predict(self, x_new):

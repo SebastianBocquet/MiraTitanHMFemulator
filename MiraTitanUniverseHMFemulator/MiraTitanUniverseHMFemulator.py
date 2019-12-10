@@ -53,14 +53,14 @@ class Emulator:
 
         # GP input data
         params_design = np.load(os.path.join(data_path, 'params_design_w0wb_191207-201834.npy'))
-        hyper_params = np.load(os.path.join(data_path, 'hyperparams_191128-151317.npy'))
+        hyper_params = np.load(os.path.join(data_path, 'hyperparams_191210-144737.npy'))
         input_means = np.load(os.path.join(data_path, 'means_191209-133529.npy'))
-        prec_mat = np.load(os.path.join(data_path, 'cov_n_191209-133529.npy'))
+        cov_mat_data = np.load(os.path.join(data_path, 'cov_n_191209-133529.npy'))
         self.__GPreg = [GP.GaussianProcess(params_design,
                                            input_means[z_id],
+                                           cov_mat_data[z_id],
                                            hyper_params[z_id,:4],
-                                           prec_mat[z_id],
-                                           rho=hyper_params[z_id,4:].reshape(4,-1))
+                                           hyper_params[z_id,4:].reshape(4,-1))
                         for z_id in range(len(self.z_arr))]
 
 
@@ -125,7 +125,7 @@ class Emulator:
         for i in range(len(self.z_arr)):
             output[self.z_arr[i]] = {'redshift': self.z_arr[i],
                                      'log10_M': log10_M_full[:len(self.__PCA_means[i])],}
-        for i in range(len(self.z_arr)):
+
             # Call the GP
             wstar, wstar_covmat = self.__GPreg[i].predict(requested_cosmology_normed)
             # De-standardize to GP input
@@ -146,12 +146,6 @@ class Emulator:
                 output[self.z_arr[i]]['HMF_std'] = np.std(output[self.z_arr[i]]['HMF_draws']/output[self.z_arr[i]]['HMF_mean'], axis=0)
                 if not return_draws:
                     del output[self.z_arr[i]]['HMF_draws']
-            else:
-                try:
-                    del output[self.z_arr[i]]['HMF_mean']
-                    del output[self.z_arr[i]]['HMF_std']
-                except:
-                    pass
 
         return output
 
