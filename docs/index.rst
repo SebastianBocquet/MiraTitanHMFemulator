@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to MiraTitanUniverseHMFemulator's documentation!
-========================================================
+Welcome to the MiraTitanUniverseHMFemulator documentation!
+==========================================================
 
 This package provides the emulator for the halo mass function (HMF) from the
 *Mira-Titan Universe* suite of cosmological N-body simulations.

@@ -1,13 +1,14 @@
 MiraTitanUniverseHMFemulator
 ============================
 
-Emulator for the halo mass function (HMF) from the Mira-Titan Universe suite of
-cosmological N-body simulations.
+This package provides the emulator for the halo mass function (HMF) from the
+*Mira-Titan Universe* suite of cosmological N-body simulations.
 
 Installation
 ------------
 
-Just use ``pip``::
+This python package only requires the standard packages numpy and scipy. Simply
+install using ``pip``::
 
   pip install git+https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator
 
