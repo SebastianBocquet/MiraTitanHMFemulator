@@ -165,6 +165,8 @@ class Emulator:
             if cosmo_dict[param]>self.param_limits[param][1]:
                 raise ValueError("Parameter %s is %.4f but must be <= %.4f"%(param, cosmo_dict[param], self.param_limits[param][1]))
         # Normalize the parameters
-        normed_p = [(cosmo_dict[param] - self.param_limits[param][0]) / (self.param_limits[param][1] - self.param_limits[param][0])
-                    for param in self.__param_names]
-        return np.array(normed_p)
+        normed_p = np.empty(len(self.__param_names))
+        for i,param in enumerate(self.__param_names):
+            normed_p[i] = (cosmo_dict[param] - self.param_limits[param][0]) / (self.param_limits[param][1] - self.param_limits[param][0])
+
+        return normed_p
