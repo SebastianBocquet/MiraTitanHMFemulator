@@ -1,4 +1,3 @@
-
 Tutorial
 ========
 
@@ -109,7 +108,7 @@ computed the HMF. There’s a ``Units`` key, too.
 
 .. parsed-literal::
 
-    log10_M is log10(Mass in [Msun/h]), HMFs are given in [h^2 Msun/Mpc^3]
+    log10_M is log10(Mass in [Msun/h]), HMFs are given in dN/dlnM [(h/Mpc)^3]
 
 
 So far, nothing too dramatic. Now let’s look into one of the redshift
@@ -125,7 +124,7 @@ outputs:
 
 .. parsed-literal::
 
-    Keys of res[0.0]:	 dict_keys(['redshift', 'log10_M', 'HMF', 'wstar', 'wstar_covmat', 'PC_weight'])
+    Keys of res[0.0]:	 dict_keys(['redshift', 'log10_M', 'HMF'])
     Redshift of res[0.0]:	 0.0
     Array of (log) masses:	 [13.      13.00075 13.0015  ... 15.09775 15.0985  15.09925]
     The emulated HMF	 [3.34203450e-04 3.33450191e-04 3.32698490e-04 ... 2.13904071e-12
@@ -141,7 +140,7 @@ redshifts.
     for z in HMFemu.z_arr:
         plt.semilogy(res[z]['log10_M'], res[z]['HMF'], label='$z=%.2f$'%z)
     plt.xlabel('log10(Mass [Msun/h])')
-    plt.ylabel('HMF $dN/d\lnM\,[h^2 M_\odot/\\mathrm{Mpc}^3]$')
+    plt.ylabel('HMF $dN/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend()
 
 
@@ -149,7 +148,7 @@ redshifts.
 
 .. parsed-literal::
 
-    <matplotlib.legend.Legend at 0x10ac497b8>
+    <matplotlib.legend.Legend at 0x61a967780>
 
 
 
@@ -183,7 +182,7 @@ with for dark energy just for fun.
         plt.semilogy(res[z]['log10_M'], res[z]['HMF'], color=colors[i], label='$z=%.2f$ fiducial_cosmo'%z)
         plt.semilogy(res[z]['log10_M'], res_DE[z]['HMF'], color=colors[i], label='$z=%.2f$ DE_cosmo'%z, ls=':')
     plt.xlabel('log10(Mass [Msun/h])')
-    plt.ylabel('HMF $dN/d\lnM\,[h^2 M_\odot/\\mathrm{Mpc}^3]$')
+    plt.ylabel('HMF $dN/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend()
 
 
@@ -191,7 +190,7 @@ with for dark energy just for fun.
 
 .. parsed-literal::
 
-    <matplotlib.legend.Legend at 0x11bcb0da0>
+    <matplotlib.legend.Legend at 0x61ab8c470>
 
 
 

@@ -88,7 +88,7 @@ class Emulator:
         -------
         output : dictionary
             A dictionary containing all the emulator output. A `readme` key
-            describes the units: All HMFs are in [h^2 Msun/Mpc^3]. The output is
+            describes the units: The HMFs are dN/dlnM [(h/Mpc)^3]. The output is
             organized by redshift -- each dictionary key corresponds to one
             redshift. For each redshift, the output contains the following data:
 
@@ -96,8 +96,8 @@ class Emulator:
             The redshift of the emulator output.
 
         log10_M : array
-            Decadic logarithm (log10) of the masses (units [Msun/h]) for which
-            the HMF is emulated.
+            Decadic logarithm log10(mass [Msun/h]) for which the HMF is
+            emulated.
 
         HMF : array
             The HMF corresponding to the mean emulated parameters.
@@ -120,11 +120,11 @@ class Emulator:
         # Validate and normalize requested cosmology
         requested_cosmology_normed = self.__normalize_params(requested_cosmology)
 
-        output = {'Units': "log10_M is log10(Mass in [Msun/h]), HMFs are given in [h^2 Msun/Mpc^3]"}
+        output = {'Units': "log10_M is log10(Mass in [Msun/h]), HMFs are given in dN/dlnM [(h/Mpc)^3]"}
         log10_M_full = np.linspace(13, 16, 4001)
         for i in range(len(self.z_arr)):
             output[self.z_arr[i]] = {'redshift': self.z_arr[i],
-                                          'log10_M': log10_M_full[:len(self.__PCA_means[i])],}
+                                     'log10_M': log10_M_full[:len(self.__PCA_means[i])],}
         for i in range(len(self.z_arr)):
             # Call the GP
             wstar, wstar_covmat = self.__GPreg[i].predict(requested_cosmology_normed)
