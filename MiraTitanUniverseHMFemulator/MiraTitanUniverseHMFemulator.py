@@ -166,9 +166,14 @@ class Emulator:
         valid : bool
             Whether the provided dictionary is valid or not.
         """
+        # Validate joint limit in w_0, w_a, then add w_b
+        for param in ['w_0', 'w_a']:
+            if param not in cosmo_dict.keys():
+                return False
         if cosmo_dict['w_a'] > -cosmo_dict['w_0']:
             return False
         cosmo_dict['w_b'] = (-cosmo_dict['w_0'] - cosmo_dict['w_a'])**.25
+        # Check all keys and parameter ranges
         for param in self.param_limits.keys():
             if param not in cosmo_dict.keys():
                 return False
@@ -183,7 +188,10 @@ class Emulator:
         """Check that a given input cosmology dictionary is complete and within
         the bounds of the Mira-Titan Universe design and return the normalized
         cosmological parameter array."""
-        # Add w_b
+        # Validate joint limit in w_0, w_a, then add w_b
+        for param in ['w_0', 'w_a']:
+            if param not in cosmo_dict.keys():
+                raise KeyError("You did not provide %s"%param)
         if cosmo_dict['w_a'] > -cosmo_dict['w_0']:
             raise ValueError("w_0 + w_a must be <0. You have w_0 %.4f and w_a %.4f"%(cosmo_dict['w_0'], cosmo_dict['w_a']))
         cosmo_dict['w_b'] = (-cosmo_dict['w_0'] - cosmo_dict['w_a'])**.25

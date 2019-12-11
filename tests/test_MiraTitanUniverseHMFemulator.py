@@ -10,18 +10,56 @@ class TestClass:
     def test_init(self):
         self.HMFemu = MiraTitanUniverseHMFemulator.Emulator()
 
+
+    def test_validated_params(self):
+        HMFemu = MiraTitanUniverseHMFemulator.Emulator()
+        fiducial_cosmo = {'Ommh2': .3*.7**2,
+                          'Ombh2': .022,
+                          'Omnuh2': .006,
+                          'n_s': .96,
+                          'h': .7,
+                          'w_0': -1,
+                          'w_a': 0,
+                          'sigma_8': .8,
+                          }
+        assert HMFemu.validate_params(fiducial_cosmo) is True
+
+        # Missing keys, parameter limits
+        fiducial_cosmo = {'Ommh2': .3*.7**2,
+                          'Ombh2': .022,
+                          'Omnuh2': .006,
+                          'n_s': .96,
+                          'h': .7,
+                          'w_0': -1,
+                          'w_a': 0,
+                          'sigma_8': .8,
+                          }
+        for k in fiducial_cosmo.keys():
+            _cosmo = fiducial_cosmo.copy()
+            _cosmo.pop(k)
+            assert HMFemu.validate_params(_cosmo) is False
+
+            _cosmo = fiducial_cosmo.copy()
+            _cosmo[k]+= 2
+            assert HMFemu.validate_params(_cosmo) is False
+
+            _cosmo = fiducial_cosmo.copy()
+            _cosmo[k]-= 2
+            assert HMFemu.validate_params(_cosmo) is False
+
+
     def test_missingkey(self):
         HMFemu = MiraTitanUniverseHMFemulator.Emulator()
 
         fiducial_cosmo = {'Ommh2': .3*.7**2,
-                  'Ombh2': .022,
-                  'Omnuh2': .006,
-                  'n_s': .96,
-                  'h': .7,
-                  'w_0': -1,
-                  'w_a': 0,
-                  'sigma_8': .8,
-                 }
+                          'Ombh2': .022,
+                          'Omnuh2': .006,
+                          'n_s': .96,
+                          'h': .7,
+                          'w_0': -1,
+                          'w_a': 0,
+                          'sigma_8': .8,
+                          }
         for k in fiducial_cosmo.keys():
             _cosmo = fiducial_cosmo.copy()
             _cosmo.pop(k)
@@ -31,29 +69,29 @@ class TestClass:
         with pytest.raises(TypeError):
             HMFemu.predict()
 
+
     def test_limits(self):
         HMFemu = MiraTitanUniverseHMFemulator.Emulator()
 
         fiducial_cosmo = {'Ommh2': .3*.7**2,
-                  'Ombh2': .022,
-                  'Omnuh2': .006,
-                  'n_s': .96,
-                  'h': .7,
-                  'w_0': -1,
-                  'w_a': 0,
-                  'sigma_8': .8,
-                 }
+                          'Ombh2': .022,
+                          'Omnuh2': .006,
+                          'n_s': .96,
+                          'h': .7,
+                          'w_0': -1,
+                          'w_a': 0,
+                          'sigma_8': .8,
+                          }
 
         for k in fiducial_cosmo.keys():
             _cosmo = fiducial_cosmo.copy()
             _cosmo[k]+= 2
-
             with pytest.raises(ValueError):
                 HMFemu.predict(_cosmo)
+
         for k in fiducial_cosmo.keys():
             _cosmo = fiducial_cosmo.copy()
             _cosmo[k]-= 2
-
             with pytest.raises(ValueError):
                 HMFemu.predict(_cosmo)
 
@@ -65,14 +103,14 @@ class TestClass:
         HMFemu = MiraTitanUniverseHMFemulator.Emulator()
 
         fiducial_cosmo = {'Ommh2': .3*.7**2,
-                  'Ombh2': .022,
-                  'Omnuh2': .006,
-                  'n_s': .96,
-                  'h': .7,
-                  'w_0': -1,
-                  'w_a': 0,
-                  'sigma_8': .8,
-                 }
+                          'Ombh2': .022,
+                          'Omnuh2': .006,
+                          'n_s': .96,
+                          'h': .7,
+                          'w_0': -1,
+                          'w_a': 0,
+                          'sigma_8': .8,
+                          }
 
         res = HMFemu.predict(fiducial_cosmo)
 
