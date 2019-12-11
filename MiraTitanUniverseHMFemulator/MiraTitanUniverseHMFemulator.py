@@ -150,11 +150,42 @@ class Emulator:
         return output
 
 
+    def validate_params(self, cosmo_dict):
+        """Validate that a given input cosmology dictionary is complete and
+        within the bounds of the Mira-Titan Universe design. Note that this
+        function is only there for user convenience and is not called by the
+        emulator code (which will raise an error and explain its cause).
+
+        Parameters
+        ----------
+        cosmo_dict : dictionary
+            The set of cosmology parameters to validate.
+
+        Returns
+        -------
+        valid : bool
+            Whether the provided dictionary is valid or not.
+        """
+        if cosmo_dict['w_a'] > -cosmo_dict['w_0']:
+            return False
+        cosmo_dict['w_b'] = (-cosmo_dict['w_0'] - cosmo_dict['w_a'])**.25
+        for param in self.param_limits.keys():
+            if param not in cosmo_dict.keys():
+                return False
+            if cosmo_dict[param]<self.param_limits[param][0]:
+                return False
+            if cosmo_dict[param]>self.param_limits[param][1]:
+                return False
+        return True
+
+
     def __normalize_params(self, cosmo_dict):
         """Check that a given input cosmology dictionary is complete and within
         the bounds of the Mira-Titan Universe design and return the normalized
         cosmological parameter array."""
         # Add w_b
+        if cosmo_dict['w_a'] > -cosmo_dict['w_0']:
+            raise ValueError("w_0 + w_a must be <0. You have w_0 %.4f and w_a %.4f"%(cosmo_dict['w_0'], cosmo_dict['w_a']))
         cosmo_dict['w_b'] = (-cosmo_dict['w_0'] - cosmo_dict['w_a'])**.25
         # Check keys and parameter ranges
         for param in self.param_limits.keys():
