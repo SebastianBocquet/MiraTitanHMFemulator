@@ -7,9 +7,10 @@ Learn how to use the Mira-Titan Universe HMF emulator.
 
     import numpy as np
     from matplotlib import pyplot as plt
-
+    %matplotlib inline
+    
     import MiraTitanUniverseHMFemulator
-
+    
     print("Version", MiraTitanUniverseHMFemulator.__version__)
 
 
@@ -144,17 +145,11 @@ redshifts.
         plt.semilogy(res[z]['log10_M'], res[z]['HMF'], label='$z=%.2f$'%z)
     plt.xlabel('log10(Mass [Msun/h])')
     plt.ylabel('HMF $dN/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
-    plt.legend()
+    plt.legend();
 
 
 
-
-
-
-
-
-
-.. image:: _static/tutorial_files/tutorial_16_1.png
+.. image:: _static/tutorial_files/tutorial_16_0.png
 
 
 OK, now we understand the basic concept. Let’s try another cosmology
@@ -184,17 +179,11 @@ with for dark energy just for fun.
         plt.semilogy(res[z]['log10_M'], res_DE[z]['HMF'], color=colors[i], label='$z=%.2f$ DE_cosmo'%z, ls=':')
     plt.xlabel('log10(Mass [Msun/h])')
     plt.ylabel('HMF $dN/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
-    plt.legend()
+    plt.legend();
 
 
 
-
-
-
-
-
-
-.. image:: _static/tutorial_files/tutorial_20_1.png
+.. image:: _static/tutorial_files/tutorial_20_0.png
 
 
 Validation of input cosmology
@@ -214,7 +203,7 @@ example, if you miss one parameter, you get:
                  'w_a': 0,
     #              'sigma_8': .8,
                 }
-
+    
     try:
         HMFemu.predict(bad_cosmo)
     except Exception as e:
@@ -239,7 +228,7 @@ Or if you set a parameter outside the range:
                  'w_a': 0,
                  'sigma_8': 1.8,
                 }
-
+    
     try:
         HMFemu.predict(bad_cosmo)
     except Exception as e:
@@ -266,7 +255,7 @@ cosmology before calling the emulator:
                  'w_a': 0,
                  'sigma_8': 1.8,
                 }
-
+    
     is_valid = HMFemu.validate_params(bad_cosmo)
     print("Input cosmology is valid: %s"%is_valid)
 
@@ -287,7 +276,7 @@ cosmology before calling the emulator:
                  'w_a': 0,
                  'sigma_8': .8,
                 }
-
+    
     is_valid = HMFemu.validate_params(bad_cosmo)
     print("Input cosmology is valid: %s"%is_valid)
 
@@ -328,16 +317,11 @@ shot noise in the halo catalogs.
     plt.xlabel('log10(Mass [Msun/h])')
     plt.ylabel('Relative error on HMF')
     plt.legend()
-    plt.ylim(1e-3, 1e-1)
+    plt.ylim(1e-3, 1e-1);
 
 
 
-
-
-
-
-
-.. image:: _static/tutorial_files/tutorial_31_1.png
+.. image:: _static/tutorial_files/tutorial_31_0.png
 
 
 Also note that the emulator precision depends on the location in
@@ -360,16 +344,11 @@ errors on the fiducial cosmology and the “dark energy” model:
     plt.xlabel('log10(Mass [Msun/h])')
     plt.ylabel('Relative error on HMF')
     plt.legend()
-    plt.ylim(1e-3, 1e-1)
+    plt.ylim(1e-3, 1e-1);
 
 
 
-
-
-
-
-
-.. image:: _static/tutorial_files/tutorial_34_1.png
+.. image:: _static/tutorial_files/tutorial_34_0.png
 
 
 Finally, just for fun, let’s determine the “typical emulator precision”
@@ -389,7 +368,7 @@ the emulator paper:
             std_z1.append( tmp[1.01]['HMF_std'][[0,1000,2000]] )
             std_z0.append( tmp[0.0]['HMF_std'][[0,1000,2000]] )
     std = np.dstack((np.array(std_z1), np.array(std_z0)))
-
+    
     # Plot histograms
     labels = ['$M=10^{%d}\,M_\odot/h$'%i for i in [13,14,15]]
     for i in range(3):
@@ -404,22 +383,19 @@ the emulator paper:
                 color='C%d'%i,
                 lw=2,
                 label=labels[i])
-
+    
     plt.xlim(left=0)
     plt.xlim(0,.09)
     plt.legend()
     plt.suptitle('HMF error estimate at $z=0$ and $z=1$', fontsize=10)
     plt.xlabel('Relative error')
-    plt.ylabel('Frequency')
+    plt.ylabel('Frequency');
 
 
 
-
-
-
-
-.. image:: _static/tutorial_files/tutorial_36_1.png
+.. image:: _static/tutorial_files/tutorial_36_0.png
 
 
 That’s it, you now know how to use the Mira-Titan Universe HMF emulator.
 Please don’t hesitate to share your feedback!
+
