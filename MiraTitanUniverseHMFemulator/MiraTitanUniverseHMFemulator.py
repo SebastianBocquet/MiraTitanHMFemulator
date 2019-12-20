@@ -2,7 +2,7 @@ import numpy as np
 import os
 import inspect
 
-import MiraTitanUniverseHMFemulator.GP_matrix as GP
+from . import GP_matrix as GP
 
 
 class Emulator:
@@ -41,13 +41,12 @@ class Emulator:
 
         # Basis functions and PCA standardization parameters
         # They have different lengths so they are stored in separate files
-        self.__PCA_means, self.__PCA_std, self.__PCA_transform = [], [], []
+        self.__PCA_means, self.__PCA_transform = [], []
         for i in range(len(self.z_arr)):
             filename = os.path.join(data_path, 'PCA_mean_std_transform_%d.npy'%i)
             _tmp = np.load(filename)
-            self.__PCA_means.append(_tmp[:,0])
-            self.__PCA_std.append(_tmp[:,1])
-            self.__PCA_transform.append(_tmp[:,2:])
+            self.__PCA_means.append(_tmp[0,:])
+            self.__PCA_transform.append(_tmp[1:,:])
         self.__GP_means = np.load(os.path.join(data_path, 'GP_params_mean.npy'))
         self.__GP_std = np.load(os.path.join(data_path, 'GP_params_std.npy'))
 
@@ -56,11 +55,12 @@ class Emulator:
         hyper_params = np.load(os.path.join(data_path, 'hyperparams.npy'))
         input_means = np.load(os.path.join(data_path, 'means.npy'))
         cov_mat_data = np.load(os.path.join(data_path, 'cov_n.npy'))
+        N_PC = input_means.shape[2]
         self.__GPreg = [GP.GaussianProcess(params_design,
                                            input_means[z_id],
                                            cov_mat_data[z_id],
-                                           hyper_params[z_id,:4],
-                                           hyper_params[z_id,4:].reshape(4,-1))
+                                           hyper_params[z_id,:N_PC],
+                                           hyper_params[z_id,N_PC:].reshape(N_PC,-1))
                         for z_id in range(len(self.z_arr))]
 
 
@@ -121,7 +121,7 @@ class Emulator:
         requested_cosmology_normed = self.__normalize_params(requested_cosmology)
 
         output = {'Units': "log10_M is log10(Mass in [Msun/h]), HMFs are given in dN/dlnM [(h/Mpc)^3]"}
-        log10_M_full = np.linspace(13, 16, 4001)
+        log10_M_full = np.linspace(13, 16, 3001)
         for i in range(len(self.z_arr)):
             output[self.z_arr[i]] = {'redshift': self.z_arr[i],
                                      'log10_M': log10_M_full[:len(self.__PCA_means[i])],}
@@ -131,13 +131,13 @@ class Emulator:
             # De-standardize to GP input
             PC_weight = wstar * self.__GP_std[i] + self.__GP_means[i]
             # PCA transform
-            output[self.z_arr[i]]['HMF'] = np.exp(np.dot(PC_weight, self.__PCA_transform[i].T) * self.__PCA_std[i] + self.__PCA_means[i])
+            output[self.z_arr[i]]['HMF'] = np.exp(np.dot(PC_weight, self.__PCA_transform[i]) + self.__PCA_means[i])
 
             # Draw parameter realizations
             if N_draw>0:
                 wstar_draws = np.random.multivariate_normal(wstar, wstar_covmat, N_draw)
                 PC_weight_draws = wstar_draws * self.__GP_std[i] + self.__GP_means[i]
-                HMF_draws = np.exp(np.dot(PC_weight_draws, self.__PCA_transform[i].T) * self.__PCA_std[i] + self.__PCA_means[i])
+                HMF_draws = np.exp(np.dot(PC_weight_draws, self.__PCA_transform[i]) + self.__PCA_means[i])
                 # Replace infinites with nan to be able to get mean and std
                 idx = [np.all(np.isfinite(HMF_draws[j])) for j in range(N_draw)]
                 output[self.z_arr[i]]['HMF_draws'] = HMF_draws[idx]
