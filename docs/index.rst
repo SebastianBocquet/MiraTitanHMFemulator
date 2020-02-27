@@ -21,10 +21,15 @@ This package provides the emulator for the halo mass function (HMF) from the
 Citation
 --------
 
-Please cite our paper when using the Mira-Titan Universe HMF emulator.
+Please cite our paper when using the *Mira-Titan Universe* HMF emulator::
 
-@article{Bocquet2020,
-}
+  @article{Bocquet2020,
+           author = {{Bocquet}, Sebastian and {Heitmann}, Katrin and
+                     {Habib}, Salman and {Lawrence}, Earl and
+                     {Uram}, Thomas and {Frontiere}, Nicholas and
+                     {Pope}, Adrian and {Finkel}, Hal},
+           title = "{The Mira-Titan Universe III: Emulation of the Halo Mass Function}",
+           year = "2020",}
 
 Feedback, problems, questions
 -----------------------------

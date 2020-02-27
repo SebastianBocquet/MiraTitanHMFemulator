@@ -1,7 +1,7 @@
 Tutorial
 ========
 
-Learn how to use the Mira-Titan Universe HMF emulator.
+Learn how to use the *Mira-Titan Universe* HMF emulator.
 
 .. code:: ipython3
 
@@ -23,7 +23,7 @@ Initialize the emulator
 -----------------------
 
 This may take a few seconds: the code pre-computes a bunch of matrix
-inversions (through Cholesky decomposition).
+inversions (actually, Cholesky decompositions).
 
 .. code:: ipython3
 
@@ -74,7 +74,7 @@ not just 8 for the parameters you provided.
 
     fiducial_cosmo = {'Ommh2': .3*.7**2,
                       'Ombh2': .022,
-                      'Omnuh2': .006,
+                      'Omnuh2': .0006,
                       'n_s': .96,
                       'h': .7,
                       'w_0': -1,
@@ -112,7 +112,7 @@ computed the HMF. There’s a ``Units`` key, too.
 
 .. parsed-literal::
 
-    log10_M is log10(Mass in [Msun/h]), HMFs are given in dN/dlnM [(h/Mpc)^3]
+    log10_M is log10(Mass in [Msun/h]), HMFs are given in dn/dlnM [(h/Mpc)^3]
 
 
 So far, nothing too surprising. Now let’s look into one of the redshift
@@ -130,9 +130,9 @@ outputs:
 
     Keys of res[0.0]:	 dict_keys(['redshift', 'log10_M', 'HMF'])
     Redshift of res[0.0]:	 0.0
-    Array of (log) masses:	 [13.      13.00075 13.0015  ... 15.09775 15.0985  15.09925]
-    The emulated HMF	 [3.34320163e-04 3.33566906e-04 3.32815207e-04 ... 2.13772240e-12
-     2.08720251e-12 2.03779982e-12]
+    Array of (log) masses:	 [13.    13.001 13.002 ... 15.797 15.798 15.799]
+    The emulated HMF	 [3.58038023e-04 3.57227447e-04 3.56418706e-04 ... 1.44019868e-11
+     1.41831239e-11 1.39674654e-11]
 
 
 This cries for a nice plot. Note that the emulator covers the HMF down
@@ -143,8 +143,8 @@ redshifts.
 
     for z in HMFemu.z_arr:
         plt.semilogy(res[z]['log10_M'], res[z]['HMF'], label='$z=%.2f$'%z)
-    plt.xlabel('log10(Mass [Msun/h])')
-    plt.ylabel('HMF $dN/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
+    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
+    plt.ylabel('HMF $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend();
 
 
@@ -159,9 +159,9 @@ with for dark energy just for fun.
 
     DE_cosmo = {'Ommh2': .3*.7**2,
                 'Ombh2': .022,
-                'Omnuh2': .006,
+                'Omnuh2': .0006,
                 'n_s': .96,
-                'h': .6,
+                'h': .7,
                 'w_0': -1.3,
                 'w_a': -1,
                 'sigma_8': .8,
@@ -177,8 +177,8 @@ with for dark energy just for fun.
     for i,z in enumerate([0.0, 0.434, 1.01]):
         plt.semilogy(res[z]['log10_M'], res[z]['HMF'], color=colors[i], label='$z=%.2f$ fiducial_cosmo'%z)
         plt.semilogy(res[z]['log10_M'], res_DE[z]['HMF'], color=colors[i], label='$z=%.2f$ DE_cosmo'%z, ls=':')
-    plt.xlabel('log10(Mass [Msun/h])')
-    plt.ylabel('HMF $dN/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
+    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
+    plt.ylabel('HMF $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend();
 
 
@@ -196,7 +196,7 @@ example, if you miss one parameter, you get:
 
     bad_cosmo = {'Ommh2': .3*.7**2,
                  'Ombh2': .022,
-                 'Omnuh2': .006,
+                 'Omnuh2': .0006,
                  'n_s': .96,
                  'h': .7,
                  'w_0': -1,
@@ -221,7 +221,7 @@ Or if you set a parameter outside the range:
 
     bad_cosmo = {'Ommh2': .3*.7**2,
                  'Ombh2': .022,
-                 'Omnuh2': .006,
+                 'Omnuh2': .0006,
                  'n_s': .96,
                  'h': .7,
                  'w_0': -1,
@@ -246,44 +246,24 @@ cosmology before calling the emulator:
 
 .. code:: ipython3
 
-    bad_cosmo = {'Ommh2': .3*.7**2,
-                 'Ombh2': .022,
-                 'Omnuh2': .006,
-                 'n_s': .96,
-                 'h': .7,
-                 'w_0': -1,
-                 'w_a': 0,
-                 'sigma_8': 1.8,
-                }
-    
     is_valid = HMFemu.validate_params(bad_cosmo)
-    print("Input cosmology is valid: %s"%is_valid)
+    print("Input cosmology 'bad_cosmo' is valid: %s"%is_valid)
 
 
 .. parsed-literal::
 
-    Input cosmology is valid: False
+    Input cosmology 'bad_cosmo' is valid: False
 
 
 .. code:: ipython3
 
-    bad_cosmo = {'Ommh2': .3*.7**2,
-                 'Ombh2': .022,
-                 'Omnuh2': .006,
-                 'n_s': .96,
-                 'h': .7,
-                 'w_0': -1,
-                 'w_a': 0,
-                 'sigma_8': .8,
-                }
-    
-    is_valid = HMFemu.validate_params(bad_cosmo)
-    print("Input cosmology is valid: %s"%is_valid)
+    is_valid = HMFemu.validate_params(fiducial_cosmo)
+    print("Input cosmology 'fiducial_cosmo' is valid: %s"%is_valid)
 
 
 .. parsed-literal::
 
-    Input cosmology is valid: True
+    Input cosmology 'fiducial_cosmo' is valid: True
 
 
 Emulator uncertainty
@@ -311,13 +291,11 @@ shot noise in the halo catalogs.
 
 .. code:: ipython3
 
-    colors=['C%s'%i for i in range(3)]
-    for i,z in enumerate([0.0, 0.434, 1.01]):
-        plt.semilogy(res[z]['log10_M'], res_w_err[z]['HMF_std'], color=colors[i], label='$z=%.2f$'%z)
-    plt.xlabel('log10(Mass [Msun/h])')
+    for i,z in enumerate(HMFemu.z_arr):
+        plt.semilogy(res[z]['log10_M'], res_w_err[z]['HMF_std'], color='C%d'%i, label='$z=%.2f$'%z)
+    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
     plt.ylabel('Relative error on HMF')
-    plt.legend()
-    plt.ylim(1e-3, 1e-1);
+    plt.legend(loc='lower right');
 
 
 
@@ -335,67 +313,49 @@ errors on the fiducial cosmology and the “dark energy” model:
 
 .. code:: ipython3
 
-    colors=['C%s'%i for i in range(3)]
     for i,z in enumerate([0.0, 0.434, 1.01]):
         plt.semilogy(res_w_err[z]['log10_M'], res_w_err[z]['HMF_std'],
                      color=colors[i], label='$z=%.2f$ fiducial_cosmo'%z)
         plt.semilogy(res_DES_w_err[z]['log10_M'], res_DES_w_err[z]['HMF_std'],
                      ls=':', color=colors[i], label='$z=%.2f$ DE_cosmo'%z)
-    plt.xlabel('log10(Mass [Msun/h])')
+    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
     plt.ylabel('Relative error on HMF')
-    plt.legend()
-    plt.ylim(1e-3, 1e-1);
+    plt.legend();
 
 
 
 .. image:: _static/tutorial_files/tutorial_34_0.png
 
 
-Finally, just for fun, let’s determine the “typical emulator precision”
-by randomly sampling the parameter space. This is re-creating Fig. in
-the emulator paper:
+Redshift evolution
+==================
+
+The emulator provides the HMF for 8 discrete redshifts. If you need the
+HMF at some intermediate redshift, we recommend you simply interpolate.
+Let’s look at the evolution of the HMF with redshift at fixed mass.
 
 .. code:: ipython3
 
-    # Get the emulator precision at 500 random locations (takes a little while)
-    std_z0, std_z1 = [], []
-    while len(std_z1)<500:
-        cosmo = {}
-        for param in ('Ommh2', 'Ombh2', 'Omnuh2', 'n_s', 'h', 'sigma_8', 'w_0', 'w_a'):
-            cosmo[param] = HMFemu.param_limits[param][0] + np.random.rand() * (HMFemu.param_limits[param][1]-HMFemu.param_limits[param][0])
-        if HMFemu.validate_params(cosmo):
-            tmp = HMFemu.predict(cosmo, N_draw=1000)
-            std_z1.append( tmp[1.01]['HMF_std'][[0,1000,2000]] )
-            std_z0.append( tmp[0.0]['HMF_std'][[0,1000,2000]] )
-    std = np.dstack((np.array(std_z1), np.array(std_z0)))
+    for m in [0, 1000]:
+        plt.semilogy(HMFemu.z_arr, [res[z]['HMF'][m] for z in HMFemu.z_arr],
+                     label='$\log_{10}(M\,[M_\odot/h])=%.1f$'%res[0.0]['log10_M'][m])
+    m = 2000
+    plt.semilogy(HMFemu.z_arr[2:], [res[z]['HMF'][m] for z in HMFemu.z_arr[2:]],
+                 label='$\log_{10}(M\,[M_\odot/h])=%.1f$'%res[0.0]['log10_M'][m],
+                )
     
-    # Plot histograms
-    labels = ['$M=10^{%d}\,M_\odot/h$'%i for i in [13,14,15]]
-    for i in range(3):
-        plt.hist(std[:,i,0], bins=20,
-                histtype='step',
-                density=True,
-                color='C%d'%i,
-                lw=1,)
-        plt.hist(std[:,i,1], bins=20,
-                histtype='step',
-                density=True,
-                color='C%d'%i,
-                lw=2,
-                label=labels[i])
-    
-    plt.xlim(left=0)
-    plt.xlim(0,.09)
-    plt.legend()
-    plt.suptitle('HMF error estimate at $z=0$ and $z=1$', fontsize=10)
-    plt.xlabel('Relative error')
-    plt.ylabel('Frequency');
+    plt.xlabel('redshift')
+    plt.ylabel('HMF $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
+    plt.legend();
 
 
 
 .. image:: _static/tutorial_files/tutorial_36_0.png
 
 
-That’s it, you now know how to use the Mira-Titan Universe HMF emulator.
-Please don’t hesitate to share your feedback!
+That’s it!
+==========
+
+You now know how to use the *Mira-Titan Universe* HMF emulator. Please
+don’t hesitate to share your feedback!
 
