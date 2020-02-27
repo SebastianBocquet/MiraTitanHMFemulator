@@ -49,6 +49,7 @@ class Emulator:
             self.__PCA_transform.append(_tmp[1:,:])
         self.__GP_means = np.load(os.path.join(data_path, 'GP_params_mean.npy'))
         self.__GP_std = np.load(os.path.join(data_path, 'GP_params_std.npy'))
+        self.__facs = np.load(os.path.join(data_path, 'facs.npy'))
 
         # GP input data
         params_design = np.load(os.path.join(data_path, 'params_design_w0wb.npy'))
@@ -66,7 +67,7 @@ class Emulator:
 
 
     def predict(self, requested_cosmology, N_draw=0, return_draws=False):
-        """Emulates the halo mass function dN/dlnM for the desired set of
+        """Emulates the halo mass function dn/dlnM for the desired set of
         cosmology parameters and returns an output dictionary.
 
         Parameters
@@ -88,7 +89,7 @@ class Emulator:
         -------
         output : dictionary
             A dictionary containing all the emulator output. A `readme` key
-            describes the units: The HMFs are dN/dlnM [(h/Mpc)^3]. The output is
+            describes the units: The HMFs are dn/dlnM [(h/Mpc)^3]. The output is
             organized by redshift -- each dictionary key corresponds to one
             redshift. For each redshift, the output contains the following data:
 
@@ -120,7 +121,7 @@ class Emulator:
         # Validate and normalize requested cosmology
         requested_cosmology_normed = self.__normalize_params(requested_cosmology)
 
-        output = {'Units': "log10_M is log10(Mass in [Msun/h]), HMFs are given in dN/dlnM [(h/Mpc)^3]"}
+        output = {'Units': "log10_M is log10(Mass in [Msun/h]), HMFs are given in dn/dlnM [(h/Mpc)^3]"}
         log10_M_full = np.linspace(13, 16, 3001)
         for i in range(len(self.z_arr)):
             output[self.z_arr[i]] = {'redshift': self.z_arr[i],
@@ -128,6 +129,7 @@ class Emulator:
 
             # Call the GP
             wstar, wstar_covmat = self.__GPreg[i].predict(requested_cosmology_normed)
+            wstar_covmat*= self.__facs[i]
             # De-standardize to GP input
             PC_weight = wstar * self.__GP_std[i] + self.__GP_means[i]
             # PCA transform
