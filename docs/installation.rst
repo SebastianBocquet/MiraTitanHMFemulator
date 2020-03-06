@@ -5,7 +5,7 @@ Installation
 Required packages
 -----------------
 
-The ``MiraTitanUniverseHMFemulator`` only requires a very minimal ``python``
+The ``MiraTitanHMFemulator`` only requires a very minimal ``python``
 installation:
 
  * python
@@ -21,14 +21,14 @@ Installing and testing
 
 I recommend you use ``pip``. Just do::
 
-  pip install git+https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator
+  pip install git+https://github.com/SebastianBocquet/MiraTitanHMFemulator
 
 To make sure nothing bad has happened you should then test the installation::
 
-  cd /path/to/MiraTitanUniverseHMFemulator
+  cd /path/to/MiraTitanHMFemulator
   pytest
 
 This should take 10-15 seconds and should confirm that you are all set. I
 suggest you now checkout out the `tutorial notebook
-<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/blob/master/tutorial.ipynb>`_
+<https://github.com/SebastianBocquet/MiraTitanHMFemulator/blob/master/tutorial.ipynb>`_
 to familiarize yourself with the emulator.

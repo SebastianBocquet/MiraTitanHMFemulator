@@ -2,8 +2,8 @@
 API
 ===
 
-.. automethod :: MiraTitanUniverseHMFemulator.Emulator.__init__()
+.. automethod :: MiraTitanHMFemulator.Emulator.__init__()
 
-.. automethod :: MiraTitanUniverseHMFemulator.Emulator.predict()
+.. automethod :: MiraTitanHMFemulator.Emulator.predict()
 
-.. automethod :: MiraTitanUniverseHMFemulator.Emulator.validate_params()
+.. automethod :: MiraTitanHMFemulator.Emulator.validate_params()

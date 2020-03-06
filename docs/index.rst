@@ -1,12 +1,12 @@
-.. MiraTitanUniverseHMFemulator documentation master file, created by
+.. MiraTitanHMFemulator documentation master file, created by
    sphinx-quickstart on Mon Dec  2 20:20:48 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to the MiraTitanUniverseHMFemulator documentation!
+Welcome to the MiraTitanHMFemulator documentation!
 ==========================================================
 
-This package provides the emulator for the halo mass function (HMF) from the
+This package provides an emulator for the halo mass function (HMF) from the
 *Mira-Titan Universe* suite of cosmological N-body simulations.
 
 .. toctree::
@@ -21,7 +21,7 @@ This package provides the emulator for the halo mass function (HMF) from the
 Citation
 --------
 
-Please cite our paper when using the *Mira-Titan Universe* HMF emulator::
+Please cite our paper when you use the *Mira-Titan* HMF emulator::
 
   @article{Bocquet2020,
            author = {{Bocquet}, Sebastian and {Heitmann}, Katrin and
@@ -35,5 +35,5 @@ Feedback, problems, questions
 -----------------------------
 
 Please `report issues on GitHub
-<https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator/issues>`_ where the
+<https://github.com/SebastianBocquet/MiraTitanHMFemulator/issues>`_ where the
 package is hosted.

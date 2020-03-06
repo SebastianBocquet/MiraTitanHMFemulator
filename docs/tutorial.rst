@@ -1,7 +1,7 @@
 Tutorial
 ========
 
-Learn how to use the *Mira-Titan Universe* HMF emulator.
+Learn how to use the *Mira-Titan* HMF emulator.
 
 .. code:: ipython3
 
@@ -9,9 +9,9 @@ Learn how to use the *Mira-Titan Universe* HMF emulator.
     from matplotlib import pyplot as plt
     %matplotlib inline
     
-    import MiraTitanUniverseHMFemulator
+    import MiraTitanHMFemulator
     
-    print("Version", MiraTitanUniverseHMFemulator.__version__)
+    print("Version", MiraTitanHMFemulator.__version__)
 
 
 .. parsed-literal::
@@ -27,7 +27,7 @@ inversions (actually, Cholesky decompositions).
 
 .. code:: ipython3
 
-    HMFemu = MiraTitanUniverseHMFemulator.Emulator()
+    HMFemu = MiraTitanHMFemulator.Emulator()
 
 Input cosmology
 ---------------
@@ -356,6 +356,6 @@ Let’s look at the evolution of the HMF with redshift at fixed mass.
 That’s it!
 ==========
 
-You now know how to use the *Mira-Titan Universe* HMF emulator. Please
-don’t hesitate to share your feedback!
+You now know how to use the *Mira-Titan* HMF emulator. Please don’t
+hesitate to share your feedback!
 
