@@ -8,4 +8,4 @@ with open(version_filename, 'r') as version_file:
 __author__ = "Sebastian Bocquet"
 __email__ = "sebastian.bocquet@gmail.com"
 
-from .MiraTitanUniverseHMFemulator import Emulator
+from .MiraTitanHMFemulator import Emulator

@@ -9,17 +9,17 @@ with open('VERSION', 'r') as version_file:
 
 
 setuptools.setup(
-    name="MiraTitanUniverseHMFemulator",
+    name="MiraTitanHMFemulator",
     version=version,
     author="Sebastian Bocquet",
     author_email="sebastian.bocquet@gmail.com",
     description="Mira-Titan Universe: Halo mass function emulator",
     long_description=long_description,
     long_description_content_type="text/md",
-    url="https://github.com/SebastianBocquet/MiraTitanUniverseHMFemulator",
-    packages=['MiraTitanUniverseHMFemulator',
+    url="https://github.com/SebastianBocquet/MiraTitanHMFemulator",
+    packages=['MiraTitanHMFemulator',
               'tests'],
-    package_data = {'MiraTitanUniverseHMFemulator': ['data/*.npy'],
+    package_data = {'MiraTitanHMFemulator': ['data/*.npy'],
                     'tests': ['*.npy']},
     classifiers=[
         "Programming Language :: Python :: 2",

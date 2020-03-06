@@ -13,12 +13,12 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../'))
-import MiraTitanUniverseHMFemulator
+import MiraTitanHMFemulator
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'MiraTitanUniverseHMFemulator'
+project = 'MiraTitanHMFemulator'
 copyright = '2019, Sebastian Bocquet'
 author = 'Sebastian Bocquet'
 
