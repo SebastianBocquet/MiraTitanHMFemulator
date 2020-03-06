@@ -131,8 +131,8 @@ outputs:
     Keys of res[0.0]:	 dict_keys(['redshift', 'log10_M', 'HMF'])
     Redshift of res[0.0]:	 0.0
     Array of (log) masses:	 [13.    13.001 13.002 ... 15.797 15.798 15.799]
-    The emulated HMF	 [3.58038023e-04 3.57227447e-04 3.56418706e-04 ... 1.44019868e-11
-     1.41831239e-11 1.39674654e-11]
+    The emulated HMF	 [3.58216702e-04 3.57405814e-04 3.56596762e-04 ... 1.42782592e-11
+     1.40608088e-11 1.38465487e-11]
 
 
 This cries for a nice plot. Note that the emulator covers the HMF down
@@ -153,11 +153,11 @@ redshifts.
 
 
 OK, now we understand the basic concept. Let’s try another cosmology
-with for dark energy just for fun.
+with dynamical dark energy just for fun.
 
 .. code:: ipython3
 
-    DE_cosmo = {'Ommh2': .3*.7**2,
+    w0wa_cosmo = {'Ommh2': .3*.7**2,
                 'Ombh2': .022,
                 'Omnuh2': .0006,
                 'n_s': .96,
@@ -169,14 +169,14 @@ with for dark energy just for fun.
 
 .. code:: ipython3
 
-    res_DE = HMFemu.predict(DE_cosmo)
+    res_w0wa = HMFemu.predict(w0wa_cosmo)
 
 .. code:: ipython3
 
     colors=['C%s'%i for i in range(3)]
     for i,z in enumerate([0.0, 0.434, 1.01]):
         plt.semilogy(res[z]['log10_M'], res[z]['HMF'], color=colors[i], label='$z=%.2f$ fiducial_cosmo'%z)
-        plt.semilogy(res[z]['log10_M'], res_DE[z]['HMF'], color=colors[i], label='$z=%.2f$ DE_cosmo'%z, ls=':')
+        plt.semilogy(res[z]['log10_M'], res_w0wa[z]['HMF'], color=colors[i], label='$z=%.2f$ w0wa_cosmo'%z, ls=':')
     plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
     plt.ylabel('HMF $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend();
@@ -287,7 +287,7 @@ now has additional keys ``HMF_mean`` and ``HMF_std``.
 
 Let’s visualize the error on the emulated HMF. As expected, the noise
 increases with mass and redshift, because the input HMFs are limited by
-shot noise in the halo catalogs.
+shot noise (and sample variance at low mass) in the halo catalogs.
 
 .. code:: ipython3
 
@@ -305,19 +305,19 @@ shot noise in the halo catalogs.
 Also note that the emulator precision depends on the location in
 parameter space: If an input model is “close”, the error is smaller than
 if the closest input cosmology is “far away”. So let’s compare the
-errors on the fiducial cosmology and the “dark energy” model:
+errors on the fiducial cosmology and the dynamical dark energy model:
 
 .. code:: ipython3
 
-    res_DES_w_err = HMFemu.predict(DE_cosmo, N_draw=1000)
+    res_w0wa_w_err = HMFemu.predict(w0wa_cosmo, N_draw=1000)
 
 .. code:: ipython3
 
     for i,z in enumerate([0.0, 0.434, 1.01]):
         plt.semilogy(res_w_err[z]['log10_M'], res_w_err[z]['HMF_std'],
                      color=colors[i], label='$z=%.2f$ fiducial_cosmo'%z)
-        plt.semilogy(res_DES_w_err[z]['log10_M'], res_DES_w_err[z]['HMF_std'],
-                     ls=':', color=colors[i], label='$z=%.2f$ DE_cosmo'%z)
+        plt.semilogy(res_w0wa_w_err[z]['log10_M'], res_w0wa_w_err[z]['HMF_std'],
+                     ls=':', color=colors[i], label='$z=%.2f$ w0wa_cosmo'%z)
     plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
     plt.ylabel('Relative error on HMF')
     plt.legend();

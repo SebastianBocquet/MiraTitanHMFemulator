@@ -28,7 +28,7 @@ Please cite our paper when you use the *Mira-Titan* HMF emulator::
                      {Habib}, Salman and {Lawrence}, Earl and
                      {Uram}, Thomas and {Frontiere}, Nicholas and
                      {Pope}, Adrian and {Finkel}, Hal},
-           title = "{The Mira-Titan Universe III: Emulation of the Halo Mass Function}",
+           title = "{The Mira-Titan Universe. III. Emulation of the Halo Mass Function}",
            year = "2020",}
 
 Feedback, problems, questions
