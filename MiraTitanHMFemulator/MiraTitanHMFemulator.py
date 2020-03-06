@@ -66,7 +66,7 @@ class Emulator:
 
 
 
-    def predict(self, requested_cosmology, N_draw=0, return_draws=False):
+    def predict(self, requested_cosmology, N_draw=0, return_draws=False, random_seed=1328):
         """Emulates the halo mass function dn/dlnM for the desired set of
         cosmology parameters and returns an output dictionary.
 
@@ -84,6 +84,10 @@ class Emulator:
             If True, also return the HMF draws from the emulator posterior
             distribution. Default is False to save memory. Applies only if
             `N_draw` is > 0.
+        random_seed : int, optional
+            Set the random seed for the HMF draws used to estimate the error.
+            Setting a seed allows you to reproduce the HMF error exactly.
+            Applies only if `N_draw` is > 0.
 
         Returns
         -------
@@ -117,6 +121,8 @@ class Emulator:
             return values `HMF_mean` and `HMF_std` are computed from these. Only
             if `N_draw` is > 0 and if `return_draws` is True.
         """
+        # Set the random seed
+        np.random.seed(random_seed)
 
         # Validate and normalize requested cosmology
         requested_cosmology_normed = self.__normalize_params(requested_cosmology)
