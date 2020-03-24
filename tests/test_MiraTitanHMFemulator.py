@@ -144,6 +144,7 @@ class TestClass:
         data_path = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
         z_arr = [2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0]
 
+        np.random.seed(1328)
         HMFemu = MiraTitanHMFemulator.Emulator()
 
         fiducial_cosmo = {'Ommh2': .3*.7**2,

@@ -19,11 +19,12 @@ import MiraTitanHMFemulator
 # -- Project information -----------------------------------------------------
 
 project = 'MiraTitanHMFemulator'
-copyright = '2019, Sebastian Bocquet'
+copyright = '2020, Sebastian Bocquet'
 author = 'Sebastian Bocquet'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.0'
+with open('../VERSION', 'r') as version_file:
+    release = version_file.read().strip()
 
 
 # -- General configuration ---------------------------------------------------

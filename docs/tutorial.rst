@@ -274,8 +274,19 @@ Now let’s look at the built-in error estimate on the emulated HMF. Set
 large enough to allow for robust error estimates. The output dictionary
 now has additional keys ``HMF_mean`` and ``HMF_std``.
 
+Important note!
+~~~~~~~~~~~~~~~
+
+The errors are estimated from stochastic draws. Therefore, to reproduce
+the errors exactly, you need to set numpy’s random seed first. If you
+don’t (which is fine) you’ll simply get a new realization of the error
+estimate.
+
 .. code:: ipython3
 
+    # Set your favorite random seed (optional, but allows to reproduce the plots below exactly)
+    np.random.seed(1328)
+    # Call the emulator and ask for 1000 stochastic draws
     res_w_err = HMFemu.predict(fiducial_cosmo, N_draw=1000)
     print(res_w_err[0.0].keys())
 
