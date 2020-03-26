@@ -7,3 +7,5 @@ API
 .. automethod :: MiraTitanHMFemulator.Emulator.predict()
 
 .. automethod :: MiraTitanHMFemulator.Emulator.validate_params()
+
+.. automethod :: MiraTitanHMFemulator.Emulator.predict_raw_emu()
