@@ -2,6 +2,8 @@ import numpy as np
 import os
 import inspect
 
+from scipy.interpolate import RectBivariateSpline
+
 from . import GP_matrix as GP
 
 
@@ -29,7 +31,8 @@ class Emulator:
         'w_b': (.3, 1.3),
     }
     # Emulator redshifts
-    z_arr = [2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0]
+    z_arr = np.array([2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0])
+    z_arr_asc = z_arr[::-1]
 
 
 
@@ -65,65 +68,154 @@ class Emulator:
                         for z_id in range(len(self.z_arr))]
 
 
-
-    def predict(self, requested_cosmology, N_draw=0, return_draws=False):
-        """Emulates the halo mass function dn/dlnM for the desired set of
-        cosmology parameters and returns an output dictionary.
+    def predict(self, requested_cosmology, z, m, get_errors=True, N_draw=1000):
+        """Emulate the halo mass function dn/dlnM for the desired set of
+        cosmology parameters, redshifts, and masses.
 
         Parameters
         ----------
         requested_cosmology : dictionary
-            The set of cosmology parameters for which the HMF is requested. The
-            parameters are `Ommh2`, `Ombh2`, `Omnuh2`, `n_s`, `h`,
-            `sigma_8`, `w_0`, `w_a`.
+            The set of cosmology parameters for which the mass function is
+            requested. The parameters are `Ommh2`, `Ombh2`, `Omnuh2`, `n_s`,
+            `h`, `sigma_8`, `w_0`, `w_a`.
+        z : float or array
+            The redshift(s) for which the mass function is requested.
+        m : float or array
+            The mass(es) for which the mass function is requested, in units
+            [Msun/h].
+        get_errors: bool, optional
+            Whether or not to compute error estimates (faster in the latter
+            case). Default is `True`.
         N_draw : int, optional
-            The emulator can provide error estimates for its HMF prediction. If
-            `N_draw` is provided, the emulator also provides `N_draw`
-            samples of the HMF and the standard deviation of those estimates.
+            How many sample mass functions to draw when computing the error
+            estimate. Applies only if `get_errors` is `True`.
+
+        Returns
+        -------
+        HMF : float or array
+            The mass function dN/dlnM in units[(h/Mpc)^3] and with shape
+            [len(z), len(m)].
+        HMF_rel_err : float or array
+            The relative error on dN/dlnM, with shape [len(z), len(m)]. Returns 0
+            if `get_errors` is `False`. For requested redshifts that are between
+            the redshifts for which the underlying emulator is defined, the
+            weighted errors from the neighboring redshifts are added in
+            quadrature.
+        """
+        # Validate requested z and m
+        if np.any(z<0):
+            raise ValueError("z must be >= 0")
+        if np.any(z>self.z_arr_asc[-1]):
+            raise ValueError("z must be <= 2.02")
+        if np.any(m<1e13):
+            raise ValueError("m must be >= 1e13")
+        if np.any(m>1e16):
+            raise ValueError("m must be <= 1e16")
+        z = np.atleast_1d(z)
+        m = np.atleast_1d(m)
+
+        # Do we want error estimates?
+        if not get_errors:
+            N_draw = 0
+
+        # Call the actual emulator
+        emu_dict = self.predict_raw_emu(requested_cosmology, N_draw=N_draw)
+
+        # Set up interpolation grids
+        HMF_interp_input = np.log(np.nextafter(0,1)) * np.ones((len(self.z_arr_asc), 3001))
+        for i,emu_z in enumerate(self.z_arr_asc):
+            HMF_interp_input[i,:len(emu_dict[emu_z]['HMF'])] = np.log(emu_dict[emu_z]['HMF'])
+        HMF_interp = RectBivariateSpline(self.z_arr_asc, np.linspace(13, 16, 3001), HMF_interp_input, kx=1, ky=1)
+
+        if get_errors:
+            HMFerr_interp_input = np.zeros((len(self.z_arr_asc), 3001))
+            for i,emu_z in enumerate(self.z_arr_asc):
+                HMFerr_interp_input[i,:len(emu_dict[emu_z]['HMF_std'])] = emu_dict[emu_z]['HMF_std']
+            HMFerr_interp = RectBivariateSpline(self.z_arr_asc, np.linspace(13, 16, 3001), HMFerr_interp_input, kx=1, ky=1)
+
+
+        # Call interpolation at input z and m
+        HMF_out = np.exp(HMF_interp(z, np.log10(m)))
+
+        HMFerr_out = np.zeros((len(z), len(m)))
+        if get_errors:
+            # First interpolate to requested m
+            HMFerr_at_m = HMFerr_interp(self.z_arr_asc, np.log10(m))
+            # Now add weighted errors in quadrature
+            for z_id,this_z in enumerate(z):
+                z_id_nearest = np.argsort(np.abs(self.z_arr_asc-this_z))[:2]
+                Delta_z = (this_z - self.z_arr_asc[z_id_nearest])/np.diff(self.z_arr_asc[z_id_nearest])
+                HMFerr_out[z_id] = np.sqrt((HMFerr_at_m[z_id_nearest[0],:]*Delta_z[0])**2 + (HMFerr_at_m[z_id_nearest[1],:]*Delta_z[1])**2)
+
+        return HMF_out, HMFerr_out
+
+
+
+
+    def predict_raw_emu(self, requested_cosmology, N_draw=0, return_draws=False):
+        """Emulates the halo mass function dn/dlnM for the desired set of
+        cosmology parameters and returns an output dictionary. This function
+        allows the user to have more fine-grained control over the raw emulator
+        output.
+
+        Parameters
+        ----------
+        requested_cosmology : dictionary
+            The set of cosmology parameters for which the mass function is
+            requested. The parameters are `Ommh2`, `Ombh2`, `Omnuh2`, `n_s`,
+            `h`, `sigma_8`, `w_0`, `w_a`.
+        N_draw : int, optional
+            The emulator can provide error estimates for its mass function
+            prediction. If `N_draw` is provided, the emulator also provides
+            `N_draw` samples of the mass function and the standard deviation of
+            those estimates.
         return_draws : bool, optional
-            If True, also return the HMF draws from the emulator posterior
-            distribution. Default is False to save memory. Applies only if
-            `N_draw` is > 0.
+            If True, also return the mass function draws from the emulator
+            posterior distribution. Default is False to save memory. Applies
+            only if `N_draw` is > 0.
 
         Returns
         -------
         output : dictionary
             A dictionary containing all the emulator output. A `readme` key
-            describes the units: The HMFs are dn/dlnM [(h/Mpc)^3]. The output is
-            organized by redshift -- each dictionary key corresponds to one
-            redshift. For each redshift, the output contains the following data:
+            describes the units: The mass functions are dn/dlnM [(h/Mpc)^3]. The
+            output is organized by redshift -- each dictionary key corresponds
+            to one redshift. For each redshift, the output contains the
+            following data:
 
         redshift : float
             The redshift of the emulator output.
 
         log10_M : array
-            Decadic logarithm log10(mass [Msun/h]) for which the HMF is
+            Decadic logarithm log10(mass [Msun/h]) for which the mass function is
             emulated.
 
         HMF : array
-            The HMF corresponding to the mean emulated parameters.
+            The mass function corresponding to the mean emulated parameters.
 
         HMF_mean : array, optional
-            The HMF corresponding to the mean of the HMFs drawn from the
-            emulator posterior distribution. Only if `N_draw` is > 0.
+            The mass function corresponding to the mean of the mass functions
+            drawn from the emulator posterior distribution. Only if `N_draw` is
+            > 0.
 
         HMF_std : array, optional
-            The (relative) standard deviation in the HMF draws from the emulator
-            posterior distribution. Should be used if as a relative error on the
-            HMF. Only if `N_draw` is > 0.
+            The (relative) standard deviation in the mass function draws from
+            the emulator posterior distribution. Should be used as a relative
+            error on the mass function. Only if `N_draw` is > 0.
 
         HMF_draws : ndarray, optional
-            HMF realizations drawn from the emulator posterior distribution. The
-            return values `HMF_mean` and `HMF_std` are computed from these. Only
-            if `N_draw` is > 0 and if `return_draws` is True.
+            Mass function realizations drawn from the emulator posterior
+            distribution. The return values `HMF_mean` and `HMF_std` are
+            computed from these. Only if `N_draw` is > 0 and if `return_draws`
+            is True.
         """
         # Validate and normalize requested cosmology
         requested_cosmology_normed = self.__normalize_params(requested_cosmology)
 
         output = {'Units': "log10_M is log10(Mass in [Msun/h]), HMFs are given in dn/dlnM [(h/Mpc)^3]"}
         log10_M_full = np.linspace(13, 16, 3001)
-        for i in range(len(self.z_arr)):
-            output[self.z_arr[i]] = {'redshift': self.z_arr[i],
+        for i,emu_z in enumerate(self.z_arr):
+            output[emu_z] = {'redshift': emu_z,
                                      'log10_M': log10_M_full[:len(self.__PCA_means[i])],}
 
             # Call the GP
@@ -132,7 +224,7 @@ class Emulator:
             # De-standardize to GP input
             PC_weight = wstar * self.__GP_std[i] + self.__GP_means[i]
             # PCA transform
-            output[self.z_arr[i]]['HMF'] = np.exp(np.dot(PC_weight, self.__PCA_transform[i]) + self.__PCA_means[i])
+            output[emu_z]['HMF'] = np.exp(np.dot(PC_weight, self.__PCA_transform[i]) + self.__PCA_means[i])
 
             # Draw parameter realizations
             if N_draw>0:
@@ -141,12 +233,12 @@ class Emulator:
                 HMF_draws = np.exp(np.dot(PC_weight_draws, self.__PCA_transform[i]) + self.__PCA_means[i])
                 # Replace infinites with nan to be able to get mean and std
                 idx = [np.all(np.isfinite(HMF_draws[j])) for j in range(N_draw)]
-                output[self.z_arr[i]]['HMF_draws'] = HMF_draws[idx]
+                output[emu_z]['HMF_draws'] = HMF_draws[idx]
                 # Compute statistics
-                output[self.z_arr[i]]['HMF_mean'] = np.mean(output[self.z_arr[i]]['HMF_draws'], axis=0)
-                output[self.z_arr[i]]['HMF_std'] = np.std(output[self.z_arr[i]]['HMF_draws']/output[self.z_arr[i]]['HMF_mean'], axis=0)
+                output[emu_z]['HMF_mean'] = np.mean(output[emu_z]['HMF_draws'], axis=0)
+                output[emu_z]['HMF_std'] = np.std(output[emu_z]['HMF_draws']/output[emu_z]['HMF_mean'], axis=0)
                 if not return_draws:
-                    del output[self.z_arr[i]]['HMF_draws']
+                    del output[emu_z]['HMF_draws']
 
         return output
 

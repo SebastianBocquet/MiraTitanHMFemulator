@@ -6,6 +6,8 @@ import pytest
 import MiraTitanHMFemulator
 
 class TestClass:
+    z_arr = np.linspace(0, 2.02, 4)
+    m_arr = np.logspace(13, 16, 31)
 
     def test_init(self):
         self.HMFemu = MiraTitanHMFemulator.Emulator()
@@ -64,13 +66,13 @@ class TestClass:
             _cosmo = fiducial_cosmo.copy()
             _cosmo.pop(k)
             with pytest.raises(KeyError):
-                HMFemu.predict(_cosmo)
+                HMFemu.predict(_cosmo, self.z_arr, self.m_arr)
 
         with pytest.raises(TypeError):
             HMFemu.predict()
 
 
-    def test_limits(self):
+    def test_cosmo_limits(self):
         HMFemu = MiraTitanHMFemulator.Emulator()
 
         fiducial_cosmo = {'Ommh2': .3*.7**2,
@@ -87,18 +89,18 @@ class TestClass:
             _cosmo = fiducial_cosmo.copy()
             _cosmo[k]+= 2
             with pytest.raises(ValueError):
-                HMFemu.predict(_cosmo)
+                HMFemu.predict(_cosmo, self.z_arr, self.m_arr)
 
         for k in fiducial_cosmo.keys():
             _cosmo = fiducial_cosmo.copy()
             _cosmo[k]-= 2
             with pytest.raises(ValueError):
-                HMFemu.predict(_cosmo)
+                HMFemu.predict(_cosmo, self.z_arr, self.m_arr)
 
 
     def test_fiducial(self):
+        np.random.seed(1328)
         data_path = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
-        z_arr = [2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0]
 
         HMFemu = MiraTitanHMFemulator.Emulator()
 
@@ -112,18 +114,24 @@ class TestClass:
                           'sigma_8': .8,
                           }
 
-        res = HMFemu.predict(fiducial_cosmo)
+        res = HMFemu.predict(fiducial_cosmo, self.z_arr, self.m_arr)
 
-        for i in range(len(z_arr)):
-            _fname = os.path.join(data_path, 'fid_%d.npy'%i)
-            # np.save(_fname, res[z_arr[i]]['HMF'])
-            ref = np.load(_fname)
-            assert np.all(np.isclose(res[z_arr[i]]['HMF'], ref))
+        # Mass function
+        _fname = os.path.join(data_path, 'fid.npy')
+        # np.save(_fname, res[0])
+        ref = np.load(_fname)
+        assert np.all(np.isclose(res[0], ref))
+
+        # Error on mass function
+        _fname = os.path.join(data_path, 'fid_err.npy')
+        # np.save(_fname, res[1])
+        ref = np.load(_fname)
+        assert np.all(np.isclose(res[1], ref))
 
 
     def test_center(self):
+        np.random.seed(1328)
         data_path = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
-        z_arr = [2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0]
 
         HMFemu = MiraTitanHMFemulator.Emulator()
 
@@ -131,36 +139,16 @@ class TestClass:
         for k in ['Ommh2', 'Ombh2', 'Omnuh2', 'n_s', 'h', 'sigma_8', 'w_0', 'w_a']:
             mid_cosmo[k] = .5 * np.sum(HMFemu.param_limits[k])
 
-        res = HMFemu.predict(mid_cosmo)
+        res = HMFemu.predict(mid_cosmo, self.z_arr, self.m_arr)
 
-        for i in range(len(z_arr)):
-            _fname = os.path.join(data_path, 'mid_%d.npy'%i)
-            # np.save(_fname, res[z_arr[i]]['HMF'])
-            ref = np.load(_fname)
-            assert np.all(np.isclose(res[z_arr[i]]['HMF'], ref))
+        # Mass function
+        _fname = os.path.join(data_path, 'mid.npy')
+        # np.save(_fname, res[0])
+        ref = np.load(_fname)
+        assert np.all(np.isclose(res[0], ref))
 
-
-    def test_error(self):
-        data_path = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
-        z_arr = [2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0]
-
-        np.random.seed(1328)
-        HMFemu = MiraTitanHMFemulator.Emulator()
-
-        fiducial_cosmo = {'Ommh2': .3*.7**2,
-                          'Ombh2': .022,
-                          'Omnuh2': .006,
-                          'n_s': .96,
-                          'h': .7,
-                          'w_0': -1,
-                          'w_a': 0,
-                          'sigma_8': .8,
-                          }
-
-        res = HMFemu.predict(fiducial_cosmo, N_draw=100)
-
-        for i in range(len(z_arr)):
-            _fname = os.path.join(data_path, 'fid_err_%d.npy'%i)
-            # np.save(_fname, res[z_arr[i]]['HMF_std'])
-            ref = np.load(_fname)
-            assert np.all(np.isclose(res[z_arr[i]]['HMF_std'], ref))
+        # Error on mass function
+        _fname = os.path.join(data_path, 'mid_err.npy')
+        # np.save(_fname, res[1])
+        ref = np.load(_fname)
+        assert np.all(np.isclose(res[1], ref))
