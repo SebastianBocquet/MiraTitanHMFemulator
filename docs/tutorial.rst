@@ -1,7 +1,7 @@
 Tutorial
 ========
 
-Learn how to use the *Mira-Titan* HMF emulator.
+Learn how to use the *Mira-Titan* emulator for the halo mass function.
 
 .. code:: ipython3
 
@@ -32,11 +32,22 @@ inversions (actually, Cholesky decompositions).
 Input cosmology
 ---------------
 
-Let’s define a set of cosmology parameter for which we want the HMF. In
-case you are unsure about the parameters and their ranges, you can grab
-that from the emulator instance we just created. Don’t worry, the
-emulator will check that your cosmology is valid (see example
+Let’s define a set of cosmology parameter for which we want the mass
+function. In case you are unsure about the parameters and their ranges,
+you can grab that from the emulator instance we just created. Don’t
+worry, the emulator will check that your cosmology is valid (see example
 “Validation of input cosmology” below).
+
+Note about dark energy equation-of-state parametrization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The emulator itself works in the space of :math:`(w_0, w_b)`, where
+:math:`w_b = (-w_0 -w_a)^{1/4}` (see paper). The user is expected to
+provide the parameters in the usual space of :math:`(w_0, w_a)` and the
+code will handle the conversion for you!
+
+Note that the cosmology needs to satisfy all 9 parameter constraints,
+not just 8 for the parameters you provided.
 
 .. code:: ipython3
 
@@ -59,17 +70,6 @@ emulator will check that your cosmology is valid (see example
 
 
 
-Note about dark energy equation-of-state parametrization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The emulator itself works in the space of :math:`(w_0, w_b)`, where
-:math:`w_b = (-w_0 -w_a)^{1/4}` (see paper). The user is expected to
-provide the parameters in the usual space of :math:`(w_0, w_a)` and the
-code will handle the conversion for you!
-
-Note that the cosmology needs to satisfy all 9 parameter constraints,
-not just 8 for the parameters you provided.
-
 .. code:: ipython3
 
     fiducial_cosmo = {'Ommh2': .3*.7**2,
@@ -85,71 +85,71 @@ not just 8 for the parameters you provided.
 Call the emulator
 -----------------
 
-It’s as easy as:
+It’s as easy as passing the requested cosmology, redshift, and mass. The
+emulator return the mass function and the relative error:
 
 .. code:: ipython3
 
-    res = HMFemu.predict(fiducial_cosmo)
-
-Now let’s look at the output stored in the ``res`` dictionary. Each
-(numerical) key corresponds to a redshift for which the emulator
-computed the HMF. There’s a ``Units`` key, too.
-
-.. code:: ipython3
-
-    print(res.keys())
+    res = HMFemu.predict(fiducial_cosmo, 0, 1e14)
+    print(res)
 
 
 .. parsed-literal::
 
-    dict_keys(['Units', 2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0])
+    (array([[2.69632829e-05]]), array([[0.00289764]]))
 
 
-.. code:: ipython3
-
-    print(res['Units'])
-
-
-.. parsed-literal::
-
-    log10_M is log10(Mass in [Msun/h]), HMFs are given in dn/dlnM [(h/Mpc)^3]
-
-
-So far, nothing too surprising. Now let’s look into one of the redshift
-outputs:
+Admittedly, looking at a single mass and redshift is not that useful. So
+let’s ask for a couple of redshifts and an array of masses:
 
 .. code:: ipython3
 
-    print("Keys of res[0.0]:\t", res[0.0].keys())
-    print("Redshift of res[0.0]:\t", res[0.0]['redshift'])
-    print("Array of (log) masses:\t", res[0.0]['log10_M'])
-    print("The emulated HMF\t", res[0.0]['HMF'])
-
-
-.. parsed-literal::
-
-    Keys of res[0.0]:	 dict_keys(['redshift', 'log10_M', 'HMF'])
-    Redshift of res[0.0]:	 0.0
-    Array of (log) masses:	 [13.    13.001 13.002 ... 15.797 15.798 15.799]
-    The emulated HMF	 [3.58216702e-04 3.57405814e-04 3.56596762e-04 ... 1.42782592e-11
-     1.40608088e-11 1.38465487e-11]
-
-
-This cries for a nice plot. Note that the emulator covers the HMF down
-to about 1e-12, which corresponds to different masses at different
-redshifts.
-
-.. code:: ipython3
-
-    for z in HMFemu.z_arr:
-        plt.semilogy(res[z]['log10_M'], res[z]['HMF'], label='$z=%.2f$'%z)
-    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
-    plt.ylabel('HMF $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
+    z = np.linspace(0,2.02,8)
+    m = np.logspace(13,16,301)
+    res = HMFemu.predict(fiducial_cosmo, z, m)
+    
+    for i,_z in enumerate(z):
+        plt.loglog(m, res[0][i], label='$z=%.2f$'%_z)
+    plt.ylim(1e-12, 1e-3)
+    plt.xlabel('Mass $M_{200c}\,[M_\odot/h]$')
+    plt.ylabel('Mass function $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend();
 
 
 
-.. image:: _static/tutorial_files/tutorial_16_0.png
+.. image:: _static/tutorial_files/tutorial_10_0.png
+
+
+Note:
+~~~~~
+
+The sharp drops at high mass are due to the finite range of validity of
+the emulator (see the paper for details). You may of course set up an
+extrapolation to even larger masses at your own risk. The same applies
+to extrapolations to lower masses. Note that at low mass
+:math:`10{13}M_\odot/h<M<10^{13.1}M_\odot/h`, our mass function is a
+power law in mass so extrapolation should not be a problem from the
+technical point of view. But again, we do not guarantee the accuracy of
+such an extrapolation.
+
+(If you want to make a nicer looking plot you can set the high-mass
+values to NAN so they get omitted from the plot. We didn’t want to have
+the emulator return NANs for obvious reasons.)
+
+.. code:: ipython3
+
+    # Replace the ~0 values with NANs
+    res[0][res[0]<1e-12] = np.nan
+    
+    for i,_z in enumerate(z):
+        plt.loglog(m, res[0][i], label='$z=%.2f$'%_z)
+    plt.xlabel('Mass $M_{200c}\,[M_\odot/h]$')
+    plt.ylabel('Mass function $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
+    plt.legend();
+
+
+
+.. image:: _static/tutorial_files/tutorial_12_0.png
 
 
 OK, now we understand the basic concept. Let’s try another cosmology
@@ -166,30 +166,99 @@ with dynamical dark energy just for fun.
                 'w_a': -1,
                 'sigma_8': .8,
                }
-
-.. code:: ipython3
-
-    res_w0wa = HMFemu.predict(w0wa_cosmo)
+    
+    res_w0wa = HMFemu.predict(w0wa_cosmo, z, m)
+    res_w0wa[0][res_w0wa[0]<1e-12] = np.nan
 
 .. code:: ipython3
 
     colors=['C%s'%i for i in range(3)]
-    for i,z in enumerate([0.0, 0.434, 1.01]):
-        plt.semilogy(res[z]['log10_M'], res[z]['HMF'], color=colors[i], label='$z=%.2f$ fiducial_cosmo'%z)
-        plt.semilogy(res[z]['log10_M'], res_w0wa[z]['HMF'], color=colors[i], label='$z=%.2f$ w0wa_cosmo'%z, ls=':')
-    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
-    plt.ylabel('HMF $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
+    for i in [0,2,4,6]:
+        plt.loglog(m, res[0][i,:], color='C%d'%i, label='$z=%.2f$ fiducial_cosmo'%z[i])
+        plt.loglog(m, res_w0wa[0][i,:], color='C%d'%i, label='$z=%.2f$ w0wa_cosmo'%z[i], ls=':')
+    plt.xlabel('Mass $M_{200c}\,[M_\odot/h]$')
+    plt.ylabel('Mass function $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend();
 
 
 
-.. image:: _static/tutorial_files/tutorial_20_0.png
+.. image:: _static/tutorial_files/tutorial_15_0.png
+
+
+Emulator uncertainty
+--------------------
+
+Now let’s look at the built-in error estimate on the emulated mass
+function.
+
+Important note!
+~~~~~~~~~~~~~~~
+
+The errors are estimated from stochastic draws. Therefore, to reproduce
+the errors exactly for a given cosmology, you need to set numpy’s random
+seed first. If you don’t (which is fine) you’ll simply get a new
+realization of the error estimate. As above for the mass function, the
+error is set to 0 outside of the mass range for which the emulator is
+defined.
+
+.. code:: ipython3
+
+    # Set your favorite random seed (optional, but allows to reproduce the plots below exactly)
+    np.random.seed(1328)
+    # Call the emulator (less redshifts this time for better readability)
+    z = np.array([0, .5, 1, 2])
+    m = np.logspace(13,16,301)
+    res = HMFemu.predict(fiducial_cosmo, z, m)
+    # As before, set 0 error to NAN for nicer plots!
+    res[1][res[1]==0] = np.nan
+
+Let’s visualize the error on the emulated mass function. As expected,
+the noise increases with mass and redshift, because the input mass
+functions are limited by shot noise (and sample variance at low mass) in
+the halo catalogs. The jumps at high mass are due to the interpolation
+of the underlying emulator output and shouldn’t cause any trouble.
+
+.. code:: ipython3
+
+    for i,_z in enumerate(z):
+        plt.loglog(m, res[1][i], color='C%d'%i, label='$z=%.2f$'%_z)
+    plt.xlabel('Mass $M_{200c}\,[M_\odot/h]$')
+    plt.ylabel('Relative error on mass function')
+    plt.legend();
+
+
+
+.. image:: _static/tutorial_files/tutorial_19_0.png
+
+
+Also note that the emulator precision depends on the location in
+parameter space: If an input model is “close”, the error is smaller than
+if the closest input cosmology is “far away”. So let’s compare the
+errors on the fiducial cosmology and the dynamical dark energy model:
+
+.. code:: ipython3
+
+    res_w0wa = HMFemu.predict(w0wa_cosmo, z, m)
+    res_w0wa[1][res_w0wa[1]==0] = np.nan
+    
+    for i,_z in enumerate(z):
+        plt.loglog(m, res[1][i], color='C%d'%i, label='$z=%.2f$ fiducial_cosmo'%_z)
+        plt.loglog(m, res_w0wa[1][i], color='C%d'%i, label='$z=%.2f$ w0wa_cosmo'%_z, ls=':')
+    
+    plt.xlabel('Mass $M_{200c}\,[M_\odot/h]$')
+    plt.ylabel('Relative error on mass function')
+    plt.legend(loc='lower right');
+
+
+
+.. image:: _static/tutorial_files/tutorial_21_0.png
 
 
 Validation of input cosmology
 -----------------------------
 
-As mentioned earlier, the emulator validates your input cosmology. For
+Now that we’ve seen the emulator in action, let’s go back one step. As
+mentioned earlier, the emulator validates your input cosmology. For
 example, if you miss one parameter, you get:
 
 .. code:: ipython3
@@ -205,7 +274,7 @@ example, if you miss one parameter, you get:
                 }
     
     try:
-        HMFemu.predict(bad_cosmo)
+        HMFemu.predict(bad_cosmo, z, m)
     except Exception as e:
         print(repr(e))
 
@@ -230,7 +299,7 @@ Or if you set a parameter outside the range:
                 }
     
     try:
-        HMFemu.predict(bad_cosmo)
+        HMFemu.predict(bad_cosmo, z, m)
     except Exception as e:
         print(repr(e))
 
@@ -266,107 +335,84 @@ cosmology before calling the emulator:
     Input cosmology 'fiducial_cosmo' is valid: True
 
 
-Emulator uncertainty
---------------------
+Advanced stuff
+==============
 
-Now let’s look at the built-in error estimate on the emulated HMF. Set
-``N_draw`` to some reasonably large number such that the sample size is
-large enough to allow for robust error estimates. The output dictionary
-now has additional keys ``HMF_mean`` and ``HMF_std``.
+The above examples should cover most common use cases. But in case you
+are curious, here are some additional features:
 
-Important note!
-~~~~~~~~~~~~~~~
+Optional arguments
+------------------
 
-The errors are estimated from stochastic draws. Therefore, to reproduce
-the errors exactly, you need to set numpy’s random seed first. If you
-don’t (which is fine) you’ll simply get a new realization of the error
-estimate.
+When calling ``HMFemu.predict()`` you may also pass ``get_errors=False``
+if you don’t need the error estimates and you care about the slight
+improvement in execution speed. The error array will return 0. You can
+also pass the number of random draws ``N_draw`` from which the emulator
+code estimates the error on the mass function. Default is 1000.
+
+Access to the “raw” emulator output
+-----------------------------------
+
+If you feel like you need more fine-grained control over the
+interpolation machinery (in mass and redshift, not in cosmology!) then
+you can also access the “raw” output from the underlying emulator (which
+is what we discuss in our paper) by calling
+``HMFemu.predict_raw_emu()``.
 
 .. code:: ipython3
 
-    # Set your favorite random seed (optional, but allows to reproduce the plots below exactly)
-    np.random.seed(1328)
-    # Call the emulator and ask for 1000 stochastic draws
-    res_w_err = HMFemu.predict(fiducial_cosmo, N_draw=1000)
-    print(res_w_err[0.0].keys())
+    raw_res = HMFemu.predict_raw_emu(fiducial_cosmo)
+
+Now let’s look at the output stored in the ``raw_res`` dictionary. Each
+(numerical) key corresponds to a redshift for which the emulator
+computed the HMF. There’s a ``Units`` key, too.
+
+.. code:: ipython3
+
+    print(raw_res.keys())
 
 
 .. parsed-literal::
 
-    dict_keys(['redshift', 'log10_M', 'HMF', 'HMF_mean', 'HMF_std'])
+    dict_keys(['Units', 2.02, 1.61, 1.01, 0.656, 0.434, 0.242, 0.101, 0.0])
 
-
-Let’s visualize the error on the emulated HMF. As expected, the noise
-increases with mass and redshift, because the input HMFs are limited by
-shot noise (and sample variance at low mass) in the halo catalogs.
 
 .. code:: ipython3
 
-    for i,z in enumerate(HMFemu.z_arr):
-        plt.semilogy(res[z]['log10_M'], res_w_err[z]['HMF_std'], color='C%d'%i, label='$z=%.2f$'%z)
-    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
-    plt.ylabel('Relative error on HMF')
-    plt.legend(loc='lower right');
+    print(raw_res['Units'])
 
 
+.. parsed-literal::
 
-.. image:: _static/tutorial_files/tutorial_31_0.png
+    log10_M is log10(Mass in [Msun/h]), HMFs are given in dn/dlnM [(h/Mpc)^3]
 
 
-Also note that the emulator precision depends on the location in
-parameter space: If an input model is “close”, the error is smaller than
-if the closest input cosmology is “far away”. So let’s compare the
-errors on the fiducial cosmology and the dynamical dark energy model:
+So far, nothing too surprising. Now let’s look into one of the redshift
+outputs:
 
 .. code:: ipython3
 
-    res_w0wa_w_err = HMFemu.predict(w0wa_cosmo, N_draw=1000)
-
-.. code:: ipython3
-
-    for i,z in enumerate([0.0, 0.434, 1.01]):
-        plt.semilogy(res_w_err[z]['log10_M'], res_w_err[z]['HMF_std'],
-                     color=colors[i], label='$z=%.2f$ fiducial_cosmo'%z)
-        plt.semilogy(res_w0wa_w_err[z]['log10_M'], res_w0wa_w_err[z]['HMF_std'],
-                     ls=':', color=colors[i], label='$z=%.2f$ w0wa_cosmo'%z)
-    plt.xlabel('$\log_{10}$(Mass $M_{200c}\,[M_\odot/h]$)')
-    plt.ylabel('Relative error on HMF')
-    plt.legend();
+    print("Keys of res[0.0]:\t", raw_res[0.0].keys())
+    print("Redshift of res[0.0]:\t", raw_res[0.0]['redshift'])
+    print("Array of (log) masses:\t", raw_res[0.0]['log10_M'])
+    print("The emulated HMF\t", raw_res[0.0]['HMF'])
 
 
+.. parsed-literal::
 
-.. image:: _static/tutorial_files/tutorial_34_0.png
-
-
-Redshift evolution
-==================
-
-The emulator provides the HMF for 8 discrete redshifts. If you need the
-HMF at some intermediate redshift, we recommend you simply interpolate.
-Let’s look at the evolution of the HMF with redshift at fixed mass.
-
-.. code:: ipython3
-
-    for m in [0, 1000]:
-        plt.semilogy(HMFemu.z_arr, [res[z]['HMF'][m] for z in HMFemu.z_arr],
-                     label='$\log_{10}(M\,[M_\odot/h])=%.1f$'%res[0.0]['log10_M'][m])
-    m = 2000
-    plt.semilogy(HMFemu.z_arr[2:], [res[z]['HMF'][m] for z in HMFemu.z_arr[2:]],
-                 label='$\log_{10}(M\,[M_\odot/h])=%.1f$'%res[0.0]['log10_M'][m],
-                )
-    
-    plt.xlabel('redshift')
-    plt.ylabel('HMF $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
-    plt.legend();
+    Keys of res[0.0]:	 dict_keys(['redshift', 'log10_M', 'HMF'])
+    Redshift of res[0.0]:	 0.0
+    Array of (log) masses:	 [13.    13.001 13.002 ... 15.797 15.798 15.799]
+    The emulated HMF	 [3.58216702e-04 3.57405814e-04 3.56596762e-04 ... 1.42782592e-11
+     1.40608088e-11 1.38465487e-11]
 
 
-
-.. image:: _static/tutorial_files/tutorial_36_0.png
-
+The emulator interface discussed above uses these mass functions to set
+up a grid in mass and redshift within which we can interpolate at will.
 
 That’s it!
 ==========
 
 You now know how to use the *Mira-Titan* HMF emulator. Please don’t
-hesitate to share your feedback!
+hesitate to reach out to us!
 

@@ -28,7 +28,7 @@ To make sure nothing bad has happened you should then test the installation::
   cd /path/to/MiraTitanHMFemulator
   pytest
 
-This should take 10-15 seconds and should confirm that you are all set. I
+This should take about 20 seconds and should confirm that you are all set. I
 suggest you now checkout out the `tutorial notebook
 <https://github.com/SebastianBocquet/MiraTitanHMFemulator/blob/master/tutorial.ipynb>`_
 to familiarize yourself with the emulator.
