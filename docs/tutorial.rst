@@ -336,13 +336,13 @@ cosmology before calling the emulator:
 
 
 Advanced stuff
-==============
+--------------
 
 The above examples should cover most common use cases. But in case you
 are curious, here are some additional features:
 
 Optional arguments
-------------------
+~~~~~~~~~~~~~~~~~~
 
 When calling ``HMFemu.predict()`` you may also pass ``get_errors=False``
 if you don’t need the error estimates and you care about the slight
@@ -351,7 +351,7 @@ also pass the number of random draws ``N_draw`` from which the emulator
 code estimates the error on the mass function. Default is 1000.
 
 Access to the “raw” emulator output
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you feel like you need more fine-grained control over the
 interpolation machinery (in mass and redshift, not in cosmology!) then
@@ -411,7 +411,7 @@ The emulator interface discussed above uses these mass functions to set
 up a grid in mass and redshift within which we can interpolate at will.
 
 That’s it!
-==========
+----------
 
 You now know how to use the *Mira-Titan* HMF emulator. Please don’t
 hesitate to reach out to us!

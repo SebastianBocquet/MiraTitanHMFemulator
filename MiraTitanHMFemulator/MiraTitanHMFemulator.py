@@ -72,30 +72,32 @@ class Emulator:
         """Emulate the halo mass function dn/dlnM for the desired set of
         cosmology parameters, redshifts, and masses.
 
-        Parameters
-        ----------
-        requested_cosmology : dictionary
-            The set of cosmology parameters for which the mass function is
-            requested. The parameters are `Ommh2`, `Ombh2`, `Omnuh2`, `n_s`,
-            `h`, `sigma_8`, `w_0`, `w_a`.
-        z : float or array
-            The redshift(s) for which the mass function is requested.
-        m : float or array
-            The mass(es) for which the mass function is requested, in units
-            [Msun/h].
-        get_errors: bool, optional
-            Whether or not to compute error estimates (faster in the latter
-            case). Default is `True`.
-        N_draw : int, optional
-            How many sample mass functions to draw when computing the error
-            estimate. Applies only if `get_errors` is `True`.
+        :param requested_cosmology: The set of cosmology parameters for which
+            the mass function is requested. The parameters are `Ommh2`, `Ombh2`,
+            `Omnuh2`, `n_s`, `h`, `sigma_8`, `w_0`, `w_a`.
+        :type requested_cosmology: dict
+
+        :param z: The redshift(s) for which the mass function is requested.
+        :type z: float or array
+
+        :param m: The mass(es) for which the mass function is requested, in
+            units [Msun/h].
+        :type z: float or array
+
+        :param get_errors: Whether or not to compute error estimates (faster in
+            the latter case). Default is `True`.
+        :type get_errors:  bool, optional
+
+        :param N_draw: How many sample mass functions to draw when computing the
+            error estimate. Applies only if `get_errors` is `True`.
+        :type N_draw: int, optional
 
         Returns
         -------
-        HMF : float or array
+        HMF: array_like
             The mass function dN/dlnM in units[(h/Mpc)^3] and with shape
             [len(z), len(m)].
-        HMF_rel_err : float or array
+        HMF_rel_err: array_like
             The relative error on dN/dlnM, with shape [len(z), len(m)]. Returns 0
             if `get_errors` is `False`. For requested redshifts that are between
             the redshifts for which the underlying emulator is defined, the
@@ -158,56 +160,49 @@ class Emulator:
         allows the user to have more fine-grained control over the raw emulator
         output.
 
-        Parameters
-        ----------
-        requested_cosmology : dictionary
-            The set of cosmology parameters for which the mass function is
-            requested. The parameters are `Ommh2`, `Ombh2`, `Omnuh2`, `n_s`,
-            `h`, `sigma_8`, `w_0`, `w_a`.
-        N_draw : int, optional
-            The emulator can provide error estimates for its mass function
-            prediction. If `N_draw` is provided, the emulator also provides
-            `N_draw` samples of the mass function and the standard deviation of
-            those estimates.
-        return_draws : bool, optional
-            If True, also return the mass function draws from the emulator
-            posterior distribution. Default is False to save memory. Applies
-            only if `N_draw` is > 0.
+        :param requested_cosmology: The set of cosmology parameters for which
+            the mass function is requested. The parameters are `Ommh2`, `Ombh2`,
+            `Omnuh2`, `n_s`, `h`, `sigma_8`, `w_0`, `w_a`.
+        :type requested_cosmology: dict
 
-        Returns
-        -------
-        output : dictionary
-            A dictionary containing all the emulator output. A `readme` key
-            describes the units: The mass functions are dn/dlnM [(h/Mpc)^3]. The
-            output is organized by redshift -- each dictionary key corresponds
-            to one redshift. For each redshift, the output contains the
-            following data:
+        :param N_draw: The emulator can provide error estimates for its mass
+            function prediction. If `N_draw` is provided, the emulator also
+            provides `N_draw` samples of the mass function and the standard
+            deviation of those estimates.
+        :type N_draw: int, optional
 
-        redshift : float
-            The redshift of the emulator output.
+        :param return_draws: If True, also return the mass function draws from
+            the emulator posterior distribution. Default is False to save
+            memory. Applies only if `N_draw` is > 0.
+        :type return_draws: bool, optional
 
-        log10_M : array
-            Decadic logarithm log10(mass [Msun/h]) for which the mass function is
-            emulated.
-
-        HMF : array
-            The mass function corresponding to the mean emulated parameters.
-
-        HMF_mean : array, optional
-            The mass function corresponding to the mean of the mass functions
-            drawn from the emulator posterior distribution. Only if `N_draw` is
-            > 0.
-
-        HMF_std : array, optional
-            The (relative) standard deviation in the mass function draws from
-            the emulator posterior distribution. Should be used as a relative
-            error on the mass function. Only if `N_draw` is > 0.
-
-        HMF_draws : ndarray, optional
-            Mass function realizations drawn from the emulator posterior
-            distribution. The return values `HMF_mean` and `HMF_std` are
-            computed from these. Only if `N_draw` is > 0 and if `return_draws`
-            is True.
+        :returns: A dictionary containing all the emulator output. A `readme`
+            key describes the units: The mass functions are dn/dlnM [(h/Mpc)^3].
+            The output is organized by redshift -- each dictionary key
+            corresponds to one redshift. For each redshift, the output contains
+            the following data:
+            
+            redshift: float
+                The redshift of the emulator output.
+            log10_M: array_like
+                Decadic logarithm log10(mass [Msun/h]) for which the mass
+                function is emulated.
+            HMF: array_like
+                The mass function corresponding to the mean emulated parameters.
+            HMF_mean: array_like, optional
+                The mass function corresponding to the mean of the mass
+                functions drawn from the emulator posterior distribution. Only
+                if `N_draw` is > 0.
+            HMF_std: array_like, optional
+                The (relative) standard deviation in the mass function draws
+                from the emulator posterior distribution. Should be used as a
+                relative error on the mass function. Only if `N_draw` is > 0.
+            HMF_draws: ndarray, optional
+                Mass function realizations drawn from the emulator posterior
+                distribution. The return values `HMF_mean` and `HMF_std` are
+                computed from these. Only if `N_draw` is > 0 and if
+                `return_draws` is True.
+        :rtype: dict
         """
         # Validate and normalize requested cosmology
         requested_cosmology_normed = self.__normalize_params(requested_cosmology)
@@ -249,15 +244,11 @@ class Emulator:
         function is only there for user convenience and is not called by the
         emulator code (which will raise an error and explain its cause).
 
-        Parameters
-        ----------
-        cosmo_dict : dictionary
-            The set of cosmology parameters to validate.
+        :param cosmo_dict: The set of cosmology parameters to validate.
+        :type cosmo_dict: dict
 
-        Returns
-        -------
-        valid : bool
-            Whether the provided dictionary is valid or not.
+        :return: Whether the provided dictionary is valid or not.
+        :rtype: bool
         """
         # Validate joint limit in w_0, w_a, then add w_b
         for param in ['w_0', 'w_a']:
