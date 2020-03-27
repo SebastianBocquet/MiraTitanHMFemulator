@@ -25,5 +25,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=2.6',
+    install_requires = ['numpy', 'scipy'],
 )
