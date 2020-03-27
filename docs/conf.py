@@ -23,7 +23,7 @@ copyright = '2020, Sebastian Bocquet'
 author = 'Sebastian Bocquet'
 
 # The full version, including alpha/beta/rc tags
-with open('../VERSION', 'r') as version_file:
+with open('../MiraTitanHMFemulator/VERSION', 'r') as version_file:
     release = version_file.read().strip()
 
 

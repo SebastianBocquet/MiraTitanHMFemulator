@@ -4,7 +4,7 @@ import os
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
-with open('VERSION', 'r') as version_file:
+with open('MiraTitanHMFemulator/VERSION', 'r') as version_file:
     version = version_file.read().strip()
 
 
@@ -17,10 +17,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/md",
     url="https://github.com/SebastianBocquet/MiraTitanHMFemulator",
-    packages=['MiraTitanHMFemulator',
-              'tests'],
-    package_data = {'MiraTitanHMFemulator': ['data/*.npy'],
-                    'tests': ['*.npy']},
+    packages=['MiraTitanHMFemulator'],
+    package_data = {'MiraTitanHMFemulator': ['VERSION', 'data/*.npy', 'tests/*py']},
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3",
