@@ -10,7 +10,7 @@ Installation
 This python package only requires the standard packages numpy and scipy. Simply
 install using ``pip``::
 
-  pip install git+https://github.com/SebastianBocquet/MiraTitanHMFemulator
+  pip install MiraTitanHMFemulator
 
 and then ``pytest`` to validate your installation::
 
@@ -23,10 +23,8 @@ Documentation
 -------------
 
 Documentation is hosted at `ReadTheDocs
-<http://MiraTitanHMFemulator.readthedocs.io/>`_. Alternatively, take a
-look at the `tutorial notebook on GitHub
-<https://github.com/SebastianBocquet/MiraTitanHMFemulator/blob/master/tutorial.ipynb>`_
-for a working example.
+<http://MiraTitanHMFemulator.readthedocs.io/>`_. Find examples for how to use
+the emulator there!
 
 Citation
 --------

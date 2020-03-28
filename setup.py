@@ -15,7 +15,7 @@ setuptools.setup(
     author_email="sebastian.bocquet@gmail.com",
     description="Mira-Titan Universe: Halo mass function emulator",
     long_description=long_description,
-    long_description_content_type="text/md",
+    long_description_content_type="text/x-rst",
     url="https://github.com/SebastianBocquet/MiraTitanHMFemulator",
     packages=['MiraTitanHMFemulator'],
     package_data = {'MiraTitanHMFemulator': ['VERSION', 'data/*.npy', 'tests/*py']},
