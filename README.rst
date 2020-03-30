@@ -31,14 +31,23 @@ Citation
 
 Please cite our paper when you use the *Mira-Titan* HMF emulator::
 
-  @article{Bocquet2020,
-           author = {{Bocquet}, Sebastian and {Heitmann}, Katrin and
-                     {Habib}, Salman and {Lawrence}, Earl and
-                     {Uram}, Thomas and {Frontiere}, Nicholas and
+  @ARTICLE{Bocquet2020arXiv200312116B,
+           author = {{Bocquet}, Sebastian and {Heitmann}, Katrin and {Habib}, Salman and
+                     {Lawrence}, Earl and {Uram}, Thomas and {Frontiere}, Nicholas and
                      {Pope}, Adrian and {Finkel}, Hal},
            title = "{The Mira-Titan Universe. III. Emulation of the Halo Mass Function}",
-           year = "2020",
-           journal = {arXiv e-prints},}
+           journal = {arXiv e-prints},
+           keywords = {Astrophysics - Cosmology and Nongalactic Astrophysics},
+           year = 2020,
+           month = mar,
+           eid = {arXiv:2003.12116},
+           pages = {arXiv:2003.12116},
+           archivePrefix = {arXiv},
+           eprint = {2003.12116},
+           primaryClass = {astro-ph.CO},
+           adsurl = {https://ui.adsabs.harvard.edu/abs/2020arXiv200312116B},
+           adsnote = {Provided by the SAO/NASA Astrophysics Data System}}
+
 
 Feedback, problems, questions
 -----------------------------
