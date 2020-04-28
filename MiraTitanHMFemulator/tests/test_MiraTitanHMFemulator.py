@@ -9,11 +9,41 @@ class TestClass:
     z_arr = np.linspace(0, 2.02, 4)
     m_arr = np.logspace(13, 16, 31)
 
+
     def test_init(self):
         self.HMFemu = MiraTitanHMFemulator.Emulator()
 
 
-    def test_validated_params(self):
+    def test_translate_params(self):
+        HMFemu = MiraTitanHMFemulator.Emulator()
+        fiducial_cosmo_no_underscore = {'Ommh2': .3*.7**2,
+                                        'Ombh2': .022,
+                                        'Omnuh2': .006,
+                                        'ns': .96,
+                                        'h': .7,
+                                        'w0': -1,
+                                        'wa': 0,
+                                        'sigma8': .8}
+
+        # Check that translate_params returns
+        assert HMFemu._Emulator__translate_params(fiducial_cosmo_no_underscore) is True
+
+        # Check that translate_params copied the parameters
+        for var_w, var_wo in zip(['w_0', 'w_a', 'n_s', 'sigma_8'], ['w0', 'wa', 'ns', 'sigma8']):
+            assert np.isclose(fiducial_cosmo_no_underscore[var_wo], fiducial_cosmo_no_underscore[var_w])
+
+        # Check that inconsistent definitions are caught
+        variables_with_underscores = {'n_s': 1,
+                                      'w_0': -1.1,
+                                      'w_a': .1,
+                                      'sigma_8': .88}
+        for name in variables_with_underscores.keys():
+            _cosmo = fiducial_cosmo_no_underscore.copy()
+            _cosmo[name] = variables_with_underscores[name]
+            assert HMFemu._Emulator__translate_params(_cosmo) is False
+
+
+    def test_validate_params(self):
         HMFemu = MiraTitanHMFemulator.Emulator()
         fiducial_cosmo = {'Ommh2': .3*.7**2,
                           'Ombh2': .022,
@@ -25,6 +55,17 @@ class TestClass:
                           'sigma_8': .8,
                           }
         assert HMFemu.validate_params(fiducial_cosmo) is True
+
+        fiducial_cosmo_no_underscore = {'Ommh2': .3*.7**2,
+                                        'Ombh2': .022,
+                                        'Omnuh2': .006,
+                                        'ns': .96,
+                                        'h': .7,
+                                        'w0': -1,
+                                        'wa': 0,
+                                        'sigma8': .8,
+                                        }
+        assert HMFemu.validate_params(fiducial_cosmo_no_underscore) is True
 
         # Missing keys, parameter limits
         fiducial_cosmo = {'Ommh2': .3*.7**2,

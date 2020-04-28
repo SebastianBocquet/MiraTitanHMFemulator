@@ -181,7 +181,7 @@ class Emulator:
             The output is organized by redshift -- each dictionary key
             corresponds to one redshift. For each redshift, the output contains
             the following data:
-            
+
             redshift: float
                 The redshift of the emulator output.
             log10_M: array_like
@@ -238,6 +238,27 @@ class Emulator:
         return output
 
 
+    def __translate_params(self, cosmo_dict):
+        """Copy cosmology parameter variables defined without underscores to
+        variable names with underscore, which is the default naming scheme. If
+        both variable flavors are provided, check for consistency.
+
+        :param cosmo_dict: The input set of cosmology parameters.
+        :type cosmo_dict: dict
+
+        :return: Whether duplicate variables are consistent or not.
+        :rtype: bool
+        """
+        for var_w, var_wo in zip(['w_0', 'w_a', 'n_s', 'sigma_8'], ['w0', 'wa', 'ns', 'sigma8']):
+            if var_wo in cosmo_dict.keys():
+                if var_w in cosmo_dict.keys():
+                    if not np.isclose(cosmo_dict[var_wo], cosmo_dict[var_w]):
+                        return False
+                else:
+                    cosmo_dict[var_w] = cosmo_dict[var_wo]
+        return True
+
+
     def validate_params(self, cosmo_dict):
         """Validate that a given input cosmology dictionary is complete and
         within the bounds of the Mira-Titan Universe design. Note that this
@@ -250,6 +271,9 @@ class Emulator:
         :return: Whether the provided dictionary is valid or not.
         :rtype: bool
         """
+        # Translate parameter names where necessary
+        if not self.__translate_params(cosmo_dict):
+            return False
         # Validate joint limit in w_0, w_a, then add w_b
         for param in ['w_0', 'w_a']:
             if param not in cosmo_dict.keys():
@@ -272,6 +296,9 @@ class Emulator:
         """Check that a given input cosmology dictionary is complete and within
         the bounds of the Mira-Titan Universe design and return the normalized
         cosmological parameter array."""
+        # Translate parameter names where necessary
+        if not self.__translate_params(cosmo_dict):
+            raise ValueError("At least one variable is provided twice but with inconsistent values")
         # Validate joint limit in w_0, w_a, then add w_b
         for param in ['w_0', 'w_a']:
             if param not in cosmo_dict.keys():
