@@ -2,6 +2,9 @@ Tutorial
 ========
 
 Learn how to use the *Mira-Titan* emulator for the halo mass function.
+This tutorial is built from a jupyter notebook hosted on the
+`MiraTitanHMFemulator GitHub
+repository <https://github.com/SebastianBocquet/MiraTitanHMFemulator/blob/master/tutorial.ipynb>`__.
 
 .. code:: ipython3
 
@@ -16,7 +19,7 @@ Learn how to use the *Mira-Titan* emulator for the halo mass function.
 
 .. parsed-literal::
 
-    Version 0.0.0
+    Version 0.0.1
 
 
 Initialize the emulator
@@ -96,7 +99,7 @@ emulator return the mass function and the relative error:
 
 .. parsed-literal::
 
-    (array([[2.69632829e-05]]), array([[0.00289764]]))
+    (array([[2.69632829e-05]]), array([[0.00291517]]))
 
 
 Admittedly, looking at a single mass and redshift is not that useful. So
@@ -333,6 +336,32 @@ cosmology before calling the emulator:
 .. parsed-literal::
 
     Input cosmology 'fiducial_cosmo' is valid: True
+
+
+Cosmological parameter names
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+I tend to forget if the code expects, e.g., ``w_0`` or ``w0`` as an
+input parameter. Therefore, starting with version 0.0.1, you can provide
+parameter names with or without underscores.
+
+.. code:: ipython3
+
+    no_underscore_cosmo = {'Ommh2': .3*.7**2,
+                           'Ombh2': .022,
+                           'Omnuh2': .0006,
+                           'ns': .96,
+                           'h': .7,
+                           'w0': -1,
+                           'wa': 0,
+                           'sigma8': .8,}
+    is_valid = HMFemu.validate_params(no_underscore_cosmo)
+    print("Input cosmology without underscores is valid: %s"%is_valid)
+
+
+.. parsed-literal::
+
+    Input cosmology without underscores is valid: True
 
 
 Advanced stuff
