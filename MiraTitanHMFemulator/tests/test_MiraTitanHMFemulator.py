@@ -177,8 +177,9 @@ class TestClass:
         HMFemu = MiraTitanHMFemulator.Emulator()
 
         mid_cosmo = {}
-        for k in ['Ommh2', 'Ombh2', 'Omnuh2', 'n_s', 'h', 'sigma_8', 'w_0', 'w_a']:
+        for k in ['Ommh2', 'Ombh2', 'Omnuh2', 'n_s', 'h', 'sigma_8', 'w_0']:
             mid_cosmo[k] = .5 * np.sum(HMFemu.param_limits[k])
+        mid_cosmo['w_a'] = .5 * (-1.73 + 1.28)
 
         res = HMFemu.predict(mid_cosmo, self.z_arr, self.m_arr)
 

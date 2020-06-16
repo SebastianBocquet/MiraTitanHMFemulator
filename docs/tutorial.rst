@@ -19,7 +19,7 @@ repository <https://github.com/SebastianBocquet/MiraTitanHMFemulator/blob/master
 
 .. parsed-literal::
 
-    Version 0.0.1
+    Version 0.1.0
 
 
 Initialize the emulator
@@ -47,10 +47,7 @@ Note about dark energy equation-of-state parametrization
 The emulator itself works in the space of :math:`(w_0, w_b)`, where
 :math:`w_b = (-w_0 -w_a)^{1/4}` (see paper). The user is expected to
 provide the parameters in the usual space of :math:`(w_0, w_a)` and the
-code will handle the conversion for you!
-
-Note that the cosmology needs to satisfy all 9 parameter constraints,
-not just 8 for the parameters you provided.
+code will handle the conversion for you.
 
 .. code:: ipython3
 
@@ -68,7 +65,6 @@ not just 8 for the parameters you provided.
      'h': (0.55, 0.85),
      'sigma_8': (0.7, 0.9),
      'w_0': (-1.3, -0.7),
-     'w_a': (-1.73, 1.28),
      'w_b': (0.3, 1.3)}
 
 
@@ -99,7 +95,7 @@ emulator return the mass function and the relative error:
 
 .. parsed-literal::
 
-    (array([[2.69632829e-05]]), array([[0.00291517]]))
+    (array([[2.69632829e-05]]), array([[0.00292656]]))
 
 
 Admittedly, looking at a single mass and redshift is not that useful. So
