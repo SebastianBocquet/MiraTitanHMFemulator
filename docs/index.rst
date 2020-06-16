@@ -47,3 +47,6 @@ Feedback, problems, questions
 Please `report issues on GitHub
 <https://github.com/SebastianBocquet/MiraTitanHMFemulator/issues>`_ where the
 package is hosted.
+
+.. image:: https://zenodo.org/badge/225578117.svg
+   :target: https://zenodo.org/badge/latestdoi/225578117
