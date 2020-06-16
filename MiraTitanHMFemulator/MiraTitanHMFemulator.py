@@ -18,7 +18,7 @@ class Emulator:
         Redshifts of the emulator output.
     """
     # Cosmology parameters
-    __param_names = ('Ommh2', 'Ombh2', 'Omnuh2', 'n_s', 'h', 'sigma_8', 'w_0', 'w_b')
+    # __param_names = ('Ommh2', 'Ombh2', 'Omnuh2', 'n_s', 'h', 'sigma_8', 'w_0', 'w_b')
     param_limits = {
         'Ommh2': (.12, .155),
         'Ombh2': (.0215, .0235),
@@ -27,7 +27,6 @@ class Emulator:
         'h': (.55, .85),
         'sigma_8': (.7, .9),
         'w_0': (-1.3, -.7),
-        'w_a': (-1.73, 1.28),
         'w_b': (.3, 1.3),
     }
     # Emulator redshifts
@@ -315,8 +314,8 @@ class Emulator:
             if cosmo_dict[param]>self.param_limits[param][1]:
                 raise ValueError("Parameter %s is %.4f but must be <= %.4f"%(param, cosmo_dict[param], self.param_limits[param][1]))
         # Normalize the parameters
-        normed_p = np.empty(len(self.__param_names))
-        for i,param in enumerate(self.__param_names):
+        normed_p = np.empty(len(self.param_limits.keys()))
+        for i,param in enumerate(self.param_limits.keys()):
             normed_p[i] = (cosmo_dict[param] - self.param_limits[param][0]) / (self.param_limits[param][1] - self.param_limits[param][0])
 
         return normed_p
