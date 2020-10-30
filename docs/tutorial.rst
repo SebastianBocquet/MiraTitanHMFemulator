@@ -19,7 +19,7 @@ repository <https://github.com/SebastianBocquet/MiraTitanHMFemulator/blob/master
 
 .. parsed-literal::
 
-    Version 0.1.0
+    Version 0.1.1
 
 
 Initialize the emulator
@@ -95,7 +95,7 @@ emulator return the mass function and the relative error:
 
 .. parsed-literal::
 
-    (array([[2.69632829e-05]]), array([[0.00292656]]))
+    (array([[2.69632829e-05]]), array([[0.00295608]]))
 
 
 Admittedly, looking at a single mass and redshift is not that useful. So
@@ -179,11 +179,6 @@ with dynamical dark energy just for fun.
     plt.ylabel('Mass function $dn/d\lnM\,[(h/\\mathrm{Mpc})^3]$')
     plt.legend();
 
-
-
-.. image:: _static/tutorial_files/tutorial_15_0.png
-
-
 Emulator uncertainty
 --------------------
 
@@ -210,6 +205,11 @@ defined.
     res = HMFemu.predict(fiducial_cosmo, z, m)
     # As before, set 0 error to NAN for nicer plots!
     res[1][res[1]==0] = np.nan
+
+
+
+.. image:: _static/tutorial_files/tutorial_17_0.png
+
 
 Let’s visualize the error on the emulated mass function. As expected,
 the noise increases with mass and redshift, because the input mass
@@ -280,7 +280,7 @@ example, if you miss one parameter, you get:
 
 .. parsed-literal::
 
-    KeyError('You did not provide sigma_8',)
+    KeyError('You did not provide sigma_8')
 
 
 Or if you set a parameter outside the range:
@@ -305,7 +305,7 @@ Or if you set a parameter outside the range:
 
 .. parsed-literal::
 
-    ValueError('Parameter sigma_8 is 1.8000 but must be <= 0.9000',)
+    ValueError('Parameter sigma_8 is 1.8000 but must be <= 0.9000')
 
 
 If you don’t want the emulator to raise an exception, for example

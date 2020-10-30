@@ -1,3 +1,6 @@
+Version 0.1.1
+  * python2 now also produces correct results
+
 Version 0.1.0
   * Do not check parameter limits for wa since the parameter hypercube is defined in w0-wb space.
 
